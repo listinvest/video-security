@@ -4,57 +4,61 @@ import (
 	"fmt"
 
 	"../tasks"
-	"github.com/yakovlevdmv/goonvif"
 	//"github.com/yakovlevdmv/goonvif"
 )
 
-type device struct {
-	xaddr    string
-	login    string
-	password string
+type Device struct {
+	Xaddr    string
+	Login    string
+	Password string
 }
 
 //DeviceTask description task
 type DeviceTask struct {
-	BizTask tasks.BizTask
+	Task   tasks.BizTask
+	Result DeviceTaskResult
 }
 
 //DeviceTaskResult description task
 type DeviceTaskResult struct {
-	Devices []device
+	Devices []Device
+	Result  tasks.BizTaskResult
 }
 
 //GetID run task
-func (task DeviceTask) GetID() string {
+func (task *DeviceTask) GetID() string {
 	fmt.Println("...and DeviceTask GetTaskID")
-	return task.BizTask.ID
+	return task.Task.ID
 }
 
 //Run run task
-func (task DeviceTask) Run() tasks.BizTask {
+func (task *DeviceTask) Run() {
 	fmt.Println("DeviceTask RunTask")
 
-	devices := goonvif.GetAvailableDevicesAtSpecificEthernetInterface("0.0.0.0")
+	//devices := goonvif.GetAvailableDevicesAtSpecificEthernetInterface("0.0.0.0")
 
-	//result := []device{
-	//	device{
-	//		xaddr: "dev.GetEndpoint",
-	//	},
-	//}
-
-	result := []device{}
-
-	for _, dev := range devices {
-		newDevice := device{}
-		newDevice.xaddr = dev.GetEndpoint("Device")
-		result = append(result, newDevice)
+	result := []Device{
+		Device{
+			Xaddr: "dev.GetEndpoint",
+		},
 	}
 
-	task.BizTask.Result = DeviceTaskResult{
+	/*
+		result := []Device{}
+
+		for _, dev := range devices {
+			newDevice := device{}
+			newDevice.Xaddr = dev.GetEndpoint("Device")
+			result = append(result, newDevice)
+		}
+	*/
+
+	task.Result = DeviceTaskResult{
 		Devices: result,
+		Result: tasks.BizTaskResult{
+			IsOk: true,
+		},
 	}
-
-	return task.BizTask
 }
 
 //Abort run task

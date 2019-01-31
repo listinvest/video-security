@@ -7,7 +7,7 @@ import (
 //BizTaskRunner interface to execute task
 type BizTaskRunner interface {
 	GetID() string
-	Run() BizTask
+	Run()
 	Abort()
 }
 
@@ -15,7 +15,12 @@ type BizTaskRunner interface {
 type BizTask struct {
 	ID     string
 	Name   string
-	Result interface{}
+	Result BizTaskResult
+}
+
+//BizTaskResult result task
+type BizTaskResult struct {
+	IsOk bool
 }
 
 type taskDispatcher struct {
@@ -34,10 +39,9 @@ func GetInstance() *taskDispatcher {
 }
 
 //RunTask run task
-func (dispatcher *taskDispatcher) RunTask(task BizTaskRunner) BizTask {
-	result := task.Run()
+func (dispatcher *taskDispatcher) RunTask(task BizTaskRunner) {
+	task.Run()
 	dispatcher.Tasks = append(dispatcher.Tasks, task)
-	return result
 }
 
 //AbortTask stop task
@@ -79,7 +83,7 @@ func indexOf(tasks []BizTaskRunner, task BizTaskRunner) int {
 			return index
 		}
 	}
-	return 0
+	return -1
 }
 
 //removeByIndex

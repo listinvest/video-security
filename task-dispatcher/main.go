@@ -8,21 +8,24 @@ import (
 )
 
 func main() {
-	bizTask := autofind.DeviceTask{}
+	bizTask := autofind.DeviceTask{
+		Task: tasks.BizTask{
+			ID:   "1",
+			Name: "test",
+		},
+	}
 
 	dispatcher := tasks.GetInstance()
-	f := dispatcher.RunTask(bizTask)
+	dispatcher.RunTask(&bizTask)
 
 	fmt.Println("count tasks=", dispatcher.Count())
 
-	deviceTaskResult := f.Result.(autofind.DeviceTaskResult)
-	fmt.Println("count tasks=", deviceTaskResult)
+	devices := bizTask.Result.Devices
+	for _, device := range devices {
+		fmt.Println("device xaddres=", device.Xaddr)
+	}
 
-	//	result := bizTask.GetResult()
-	//	deviceTaskResult := result.(autofind.DeviceTaskResult)
-	//	fmt.Println("result tasks=", deviceTaskResult)
-
-	dispatcher.AbortTask(bizTask.BizTask.ID)
+	dispatcher.AbortTask(bizTask.Task.ID)
 
 	fmt.Println("count tasks=", dispatcher.Count())
 }
