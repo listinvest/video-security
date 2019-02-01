@@ -1,14 +1,15 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"time"
 
 	"./auth"
-	"./task-dispatcher/autofind"
-	"./task-dispatcher/tasks"
+	"./tasks/autofind"
+	taskDispatcher "./tasks/task-dispatcher"
 	"github.com/gorilla/mux"
 )
 
@@ -16,21 +17,19 @@ import (
 var autoFindHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 	bizTask := autofind.DeviceTask{
-		Task: tasks.BizTask{
+		Task: taskDispatcher.BizTask{
 			ID:   "1",
 			Name: "test",
 		},
 	}
 
-	dispatcher := tasks.GetInstance()
+	dispatcher := taskDispatcher.GetInstance()
 	dispatcher.RunTask(&bizTask)
 
 	devices := bizTask.Result.Devices
-	for _, device := range devices {
-		fmt.Fprintf(w, "device xaddres=", device.Xaddr)
-	}
-
-	fmt.Fprintf(w, "Find!")
+	j, _ := json.Marshal(devices)
+	res := string(j)
+	fmt.Fprintf(w, "Find: %s", res)
 })
 
 //helloHandler home handler
