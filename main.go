@@ -37,8 +37,8 @@ var autoSearchHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Req
 var manualSearchHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 	bizTask := manualsearch.DeviceTask{
-		Ips:   "192.168.11.255-192.168.12.2, 192.168.11.8",
-		Ports: "8080-8083, 80",
+		Ips:   "192.168.11.130-192.168.11.185, 192.168.11.186",
+		Ports: "80",
 		Task: taskDispatcher.BizTask{
 			ID:   "1",
 			Name: "test",
