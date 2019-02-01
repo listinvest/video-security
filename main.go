@@ -8,15 +8,37 @@ import (
 	"time"
 
 	"./auth"
-	"./tasks/autofind"
+	"./tasks/autosearch"
+	"./tasks/manualsearch"
 	taskDispatcher "./tasks/task-dispatcher"
 	"github.com/gorilla/mux"
 )
 
-//autoFindHandler
-var autoFindHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+//autoSearchHandler
+var autoSearchHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-	bizTask := autofind.DeviceTask{
+	bizTask := autosearch.DeviceTask{
+		Task: taskDispatcher.BizTask{
+			ID:   "1",
+			Name: "test",
+		},
+	}
+
+	dispatcher := taskDispatcher.GetInstance()
+	dispatcher.RunTask(&bizTask)
+
+	devices := bizTask.Result.Devices
+	j, _ := json.Marshal(devices)
+	res := string(j)
+	fmt.Fprintf(w, "Find: %s", res)
+})
+
+//manualSearchHandler
+var manualSearchHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+	bizTask := manualsearch.DeviceTask{
+		Ips:   "192.168.11.255-192.168.12.2, 192.168.11.8",
+		Ports: "8080-8083, 80",
 		Task: taskDispatcher.BizTask{
 			ID:   "1",
 			Name: "test",
@@ -44,8 +66,8 @@ func main() {
 	v1 := r.PathPrefix("/v1/").Subrouter()
 	v1.Handle("/get-token", auth.GetTokenHandler).Methods("GET")
 	v1.Handle("/home", auth.MiddlewareHandler(helloHandler)).Methods("GET")
-	//v1.Handle("/find", auth.MiddlewareHandler(autoFindHandler)).Methods("GET")
-	v1.Handle("/find", autoFindHandler).Methods("GET")
+	v1.Handle("/autosearch", autoSearchHandler).Methods("GET")
+	v1.Handle("/manualsearch", manualSearchHandler).Methods("GET")
 
 	srv := &http.Server{
 		Addr: ":8001",

@@ -4,25 +4,26 @@ import (
 	"sync"
 )
 
-//BizTaskRunner interface to execute task
+//BizTaskRunner interface task
 type BizTaskRunner interface {
 	GetID() string
 	Run()
 	Abort()
 }
 
-//BizTask description task
+//BizTask base info about task
 type BizTask struct {
 	ID     string
 	Name   string
 	Result BizTaskResult
 }
 
-//BizTaskResult result task
+//BizTaskResult result of the task
 type BizTaskResult struct {
 	IsOk bool
 }
 
+//taskDispatcher holder contains tasks are executing
 type taskDispatcher struct {
 	Tasks []BizTaskRunner
 }
@@ -53,7 +54,7 @@ func (dispatcher *taskDispatcher) AbortTask(taskID string) {
 	}
 }
 
-//AbortTask stop execute task
+//AbortTask count tasks in holder
 func (dispatcher *taskDispatcher) Count() int {
 	return len(dispatcher.Tasks)
 }

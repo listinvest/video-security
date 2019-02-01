@@ -1,32 +1,32 @@
-package autofind
+package autosearch
 
 import (
 	"fmt"
 
 	taskDispatcher "../task-dispatcher"
 	"github.com/yakovlevdmv/goonvif"
-	//"github.com/yakovlevdmv/goonvif"
 )
 
+//Device info about device
 type Device struct {
 	Xaddr    string
 	Login    string
 	Password string
 }
 
-//DeviceTask description task
+//DeviceTask auto search devices in netwotk
 type DeviceTask struct {
 	Task   taskDispatcher.BizTask
 	Result DeviceTaskResult
 }
 
-//DeviceTaskResult description task
+//DeviceTaskResult search results
 type DeviceTaskResult struct {
 	Devices []Device
 	Result  taskDispatcher.BizTaskResult
 }
 
-//GetID run task
+//GetID ID task
 func (task *DeviceTask) GetID() string {
 	fmt.Println("...and DeviceTask GetTaskID")
 	return task.Task.ID
@@ -60,7 +60,7 @@ func (task *DeviceTask) Run() {
 	}
 }
 
-//Abort run task
+//Abort executing task
 func (task DeviceTask) Abort() {
 	fmt.Println("...and DeviceTask AbortTask")
 }
