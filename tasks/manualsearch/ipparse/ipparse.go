@@ -2,74 +2,105 @@ package ipparse
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
-	"log"
 	"net"
 	"strings"
 )
 
 //GetArrayIP parse string to array ip
-func GetArrayIP(s string) []string {
+func GetArrayIP(s string) ([]string, error) {
 	result := []string{}
+
+	if len(s) == 0 {
+		return result, errors.New("input parameter s is empty")
+	}
 
 	//remove empty space
 	s = strings.Replace(s, " ", "", -1)
 
 	ipByComma := strings.Split(s, ",")
 	for _, ip := range ipByComma {
-		ips := getArrayIPByHyphen(ip)
+		ips, err := getArray(ip)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
 
 		for _, res := range ips {
 			result = addToResult(result, res)
 		}
 	}
 
-	return result
+	return result, nil
 }
 
-//getArrayIPByHyphen parse string to array ip
-func getArrayIPByHyphen(ips string) []string {
+//getArray parse string to array ip
+func getArray(s string) ([]string, error) {
 	result := []string{}
-	ipByHyphen := strings.Split(ips, "-")
+	ips := strings.Split(s, "-")
 
-	if len(ipByHyphen) == 0 {
-		return result
+	if len(ips) == 0 {
+		return result, errors.New("array len == 0")
 	}
 
-	if len(ipByHyphen) == 1 {
-		result = addToResult(result, ipByHyphen[0])
-		return result
+	if len(ips) == 1 {
+		result = addToResult(result, ips[0])
+		return result, nil
 	}
 
-	first := ipByHyphen[0]
-	last := ipByHyphen[len(ipByHyphen)-1]
+	return getArrayWithIncremental(ips)
+}
+
+//getArrayWithIncremental fill ip between min and max ip
+func getArrayWithIncremental(ips []string) ([]string, error) {
+	result := []string{}
+
+	if len(ips) < 2 {
+		return result, errors.New("array ips len < 2")
+	}
+
+	first := ips[0]
+	last := ips[len(ips)-1]
 
 	if first == last {
 		result = addToResult(result, first)
-		return result
+		return result, nil
 	}
 
 	result = addToResult(result, first)
 
 	for {
-		if equalOrGreater(first, last) {
-			result = addToResult(result, first)
-			return result
+		res, err := equalOrGreater(first, last)
+		if err != nil {
+			fmt.Println(err)
+			continue
 		}
 
-		first = incrementalIP(first)
+		//exit from loop
+		if res {
+			result = addToResult(result, first)
+			return result, nil
+		}
+
+		first, err = incrementalIP(first)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
 		result = addToResult(result, first)
 	}
 }
 
 //incrementalIP incremental ip, eg 127.0.0.1 -> 127.0.0.2
 // or 127.0.0.255 -> 127.0.1.0
-func incrementalIP(x string) string {
+func incrementalIP(x string) (string, error) {
 	ip := net.ParseIP(x)
 
 	ip = ip.To4()
 	if ip == nil {
-		log.Println("non ipv4 address")
+		return x, errors.New(fmt.Sprintln("%s non ipv4 address", x))
 	}
 
 	if ip[3] < 255 {
@@ -81,30 +112,28 @@ func incrementalIP(x string) string {
 		ip[1]++
 		ip[2] = 0
 	} else if ip[0] == 255 {
-		log.Fatalln("non ipv4 address")
+		return x, errors.New(fmt.Sprintln("%s non ipv4 address", ip.String()))
 	}
 
-	fmt.Println(ip)
-
-	return ip.String()
+	return ip.String(), nil
 }
 
 //equalOrGreater compare ip where x > y
-func equalOrGreater(x string, y string) bool {
+func equalOrGreater(x string, y string) (bool, error) {
 	ip1 := net.ParseIP(x)
 	ip1 = ip1.To4()
 	if ip1 == nil {
-		log.Println("x non ipv4 address")
+		return false, errors.New("x non ipv4 address")
 	}
 
 	ip2 := net.ParseIP(y)
 	ip2 = ip2.To4()
 	if ip2 == nil {
-		log.Println("y non ipv4 address")
+		return false, errors.New("y non ipv4 address")
 	}
 
-	return ip1.Equal(ip2) || bytes.Compare(ip1, ip2) >= 0
-
+	res := bytes.Compare(ip1, ip2) >= 0
+	return res, nil
 }
 
 //addToResult add ip to result, exclude alike
