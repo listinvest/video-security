@@ -37,7 +37,7 @@ var autoSearchHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Req
 var manualSearchHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 	bizTask := manualsearch.DeviceTask{
-		Ips:   "192.168.11.130-192.168.11.185, 192.168.11.186",
+		Ips:   "192.168.11.100-192.168.11.185, 192.168.11.186",
 		Ports: "80",
 		Task: taskDispatcher.BizTask{
 			ID:   "1",
@@ -46,7 +46,28 @@ var manualSearchHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.R
 	}
 
 	dispatcher := taskDispatcher.GetInstance()
-	dispatcher.RunTask(&bizTask)
+	dispatcher.RunAsyncTask(&bizTask)
+
+	fmt.Println("RunAsyncTask")
+
+	start := time.Now()
+
+	for {
+		time.Sleep(1 * time.Second)
+
+		t := dispatcher.GetTask(bizTask.Task.ID)
+		if t == nil {
+			break
+		}
+
+		if time.Since(start) > (3 * time.Second) {
+			break
+		}
+	}
+
+	fmt.Println("RunAsyncTask End")
+
+	dispatcher.AbortTask(bizTask.Task.ID)
 
 	devices := bizTask.Result.Devices
 	j, _ := json.Marshal(devices)

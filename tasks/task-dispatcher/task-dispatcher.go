@@ -1,4 +1,4 @@
-package task_dispatcher
+package taskdispatcher
 
 import (
 	"sync"
@@ -13,9 +13,10 @@ type BizTaskRunner interface {
 
 //BizTask base info about task
 type BizTask struct {
-	ID     string
-	Name   string
-	Result BizTaskResult
+	ID         string
+	Name       string
+	IsCanceled bool
+	Result     BizTaskResult
 }
 
 //BizTaskResult result of the task
@@ -42,7 +43,18 @@ func GetInstance() *taskDispatcher {
 //RunTask run task
 func (dispatcher *taskDispatcher) RunTask(task BizTaskRunner) {
 	task.Run()
-	dispatcher.Tasks = append(dispatcher.Tasks, task)
+}
+
+//RunTask run task async
+func (dispatcher *taskDispatcher) RunAsyncTask(task BizTaskRunner) {
+	ch := make(chan BizTaskRunner)
+	go runTaskInternal(dispatcher, task, ch)
+	go waitTaskInternal(dispatcher, ch)
+}
+
+//GetTask return task if she's running
+func (dispatcher *taskDispatcher) GetTask(taskID string) interface{} {
+	return firstOrDefault(dispatcher.Tasks, taskID)
 }
 
 //AbortTask stop task
@@ -54,12 +66,30 @@ func (dispatcher *taskDispatcher) AbortTask(taskID string) {
 	}
 }
 
-//AbortTask count tasks in holder
+//Count count tasks in holder
 func (dispatcher *taskDispatcher) Count() int {
 	return len(dispatcher.Tasks)
 }
 
 // {{{ inner implementation
+
+//runTaskInternal run task in gorutine
+func runTaskInternal(dispatcher *taskDispatcher, task BizTaskRunner, ch chan BizTaskRunner) {
+	defer close(ch)
+	dispatcher.Tasks = append(dispatcher.Tasks, task)
+	task.Run()
+	ch <- task
+}
+
+//waitTask wait task in gorutine
+func waitTaskInternal(dispatcher *taskDispatcher, ch chan BizTaskRunner) {
+	runner := <-ch
+	taskID := runner.GetID()
+	task := firstOrDefault(dispatcher.Tasks, taskID)
+	if task != nil {
+		dispatcher.Tasks = delete(dispatcher.Tasks, task)
+	}
+}
 
 //firstOrDefault
 func firstOrDefault(tasks []BizTaskRunner, taskID string) BizTaskRunner {

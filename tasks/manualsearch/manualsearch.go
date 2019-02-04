@@ -35,7 +35,7 @@ type DeviceTaskResult struct {
 
 //GetID ID task
 func (task *DeviceTask) GetID() string {
-	fmt.Println("Manual search task GetID")
+	//fmt.Println("Manual search task GetID")
 	return task.Task.ID
 }
 
@@ -62,6 +62,11 @@ func (task *DeviceTask) Run() {
 	for _, ip := range ips {
 		for _, port := range ports {
 
+			if task.Task.IsCanceled {
+				task.Result = createResult(false, result)
+				return
+			}
+
 			endpoint := fmt.Sprintf(url, ip, port)
 
 			fmt.Println("Request ", endpoint)
@@ -82,9 +87,12 @@ func (task *DeviceTask) Run() {
 }
 
 //Abort executing task
-func (task DeviceTask) Abort() {
+func (task *DeviceTask) Abort() {
+	task.Task.IsCanceled = true
 	fmt.Println("Manual search task Abort")
 }
+
+// {{{ inner implementation
 
 //Ping url to search for a device
 func ping(endpoint string) (err error) {
@@ -108,3 +116,5 @@ func createResult(isOk bool, devices []Device) DeviceTaskResult {
 		},
 	}
 }
+
+// }}}
