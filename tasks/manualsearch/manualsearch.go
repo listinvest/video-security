@@ -2,19 +2,21 @@ package manualsearch
 
 import (
 	"fmt"
-	"strconv"
+	"net/http"
+	"time"
 
 	taskDispatcher "../task-dispatcher"
 	ipparse "./ipparse"
 	portparse "./portparse"
-	"github.com/yakovlevdmv/goonvif"
+)
+
+const (
+	url = "http://%s:%v/onvif/device_service"
 )
 
 //Device info about device
 type Device struct {
-	Xaddr    string
-	Login    string
-	Password string
+	Xaddr string
 }
 
 //DeviceTask auto search devices in netwotk
@@ -33,51 +35,76 @@ type DeviceTaskResult struct {
 
 //GetID ID task
 func (task *DeviceTask) GetID() string {
-	fmt.Println("...and DeviceTask GetTaskID")
+	fmt.Println("Manual search task GetID")
 	return task.Task.ID
 }
 
 //Run run task
 func (task *DeviceTask) Run() {
-	fmt.Println("DeviceTask RunTask")
-
-	ips := ipparse.GetArrayIP(task.Ips)
-
-	for _, ip := range ips {
-		fmt.Println("ip in Run=", ip)
-	}
-
-	ports := portparse.GetArrayPort(task.Ports)
-	for _, port := range ports {
-		fmt.Println("port in Run=", port)
-	}
+	fmt.Println("Manual search task Run")
 
 	result := []Device{}
 
+	ips, err := ipparse.GetArrayIP(task.Ips)
+	if err != nil {
+		fmt.Println(err)
+		task.Result = createResult(false, result)
+		return
+	}
+
+	ports, err := portparse.GetArrayPort(task.Ports)
+	if err != nil {
+		fmt.Println(err)
+		task.Result = createResult(false, result)
+		return
+	}
+
 	for _, ip := range ips {
 		for _, port := range ports {
-			xaddr := ip + ":" + strconv.Itoa(port)
-			_, err := goonvif.NewDevice(xaddr)
+
+			endpoint := fmt.Sprintf(url, ip, port)
+
+			fmt.Println("Request ", endpoint)
+
+			err := ping(endpoint)
 			if err != nil {
 				fmt.Println(err)
 				continue
 			}
 
 			newDevice := Device{}
-			newDevice.Xaddr = xaddr
+			newDevice.Xaddr = endpoint
 			result = append(result, newDevice)
 		}
 	}
 
-	task.Result = DeviceTaskResult{
-		Devices: result,
-		Result: taskDispatcher.BizTaskResult{
-			IsOk: true,
-		},
-	}
+	task.Result = createResult(true, result)
 }
 
 //Abort executing task
 func (task DeviceTask) Abort() {
-	fmt.Println("...and DeviceTask AbortTask")
+	fmt.Println("Manual search task Abort")
+}
+
+//Ping url to search for a device
+func ping(endpoint string) (err error) {
+	httpClient := new(http.Client)
+	httpClient.Timeout = time.Duration(1 * time.Second)
+
+	_, err = httpClient.Get(endpoint)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+//createResult retutn result
+func createResult(isOk bool, devices []Device) DeviceTaskResult {
+	return DeviceTaskResult{
+		Devices: devices,
+		Result: taskDispatcher.BizTaskResult{
+			IsOk: isOk,
+		},
+	}
 }
