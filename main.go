@@ -83,6 +83,10 @@ var helloHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request)
 
 //videooHandler video handler
 var videoHandler = http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+	http.ServeFile(rw, r, "templates/video.html")
+})
+
+var videoStreamHandler = http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 	videostreamer.Run(rw, r, "rtsp://184.72.239.149/vod/mp4:BigBuckBunny_115k.mov", true)
 })
 
@@ -96,6 +100,7 @@ func main() {
 	v1.Handle("/autosearch", autoSearchHandler).Methods("GET")
 	v1.Handle("/manualsearch", manualSearchHandler).Methods("GET")
 	v1.Handle("/video", videoHandler).Methods("GET")
+	v1.Handle("/videostream", videoStreamHandler).Methods("GET")
 
 	srv := &http.Server{
 		Addr: ":8002",
