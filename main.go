@@ -11,6 +11,7 @@ import (
 	"./tasks/autosearch"
 	"./tasks/manualsearch"
 	taskDispatcher "./tasks/task-dispatcher"
+	"./videostreamer"
 	"github.com/gorilla/mux"
 )
 
@@ -80,6 +81,11 @@ var helloHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request)
 	fmt.Fprintf(w, "Hello!")
 })
 
+//videooHandler video handler
+var videoHandler = http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+	videostreamer.Run(rw, r, "rtsp://184.72.239.149/vod/mp4:BigBuckBunny_115k.mov", true)
+})
+
 func main() {
 
 	r := mux.NewRouter()
@@ -89,9 +95,10 @@ func main() {
 	v1.Handle("/home", auth.MiddlewareHandler(helloHandler)).Methods("GET")
 	v1.Handle("/autosearch", autoSearchHandler).Methods("GET")
 	v1.Handle("/manualsearch", manualSearchHandler).Methods("GET")
+	v1.Handle("/video", videoHandler).Methods("GET")
 
 	srv := &http.Server{
-		Addr: ":8001",
+		Addr: ":8002",
 		// Good practice to set timeouts to avoid Slowloris attacks.
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,
