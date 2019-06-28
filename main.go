@@ -5,13 +5,15 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sync"
 	"time"
 
 	"./auth"
 	"./tasks/autosearch"
 	"./tasks/manualsearch"
 	taskDispatcher "./tasks/task-dispatcher"
-	"./videostreamer"
+	vs "./videostreamer"
+
 	"github.com/gorilla/mux"
 )
 
@@ -86,11 +88,55 @@ var videoHandler = http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request
 	http.ServeFile(rw, r, "templates/video.html")
 })
 
-var videoStreamHandler = http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-	videostreamer.Run(rw, r, "rtsp://184.72.239.149/vod/mp4:BigBuckBunny_115k.mov", true)
-})
+//VideoStreamHandler lk
+func VideoStreamHandler(a *appContext, rw http.ResponseWriter, r *http.Request) (int, error) {
+	rw.Header().Set("Content-Type", "video/mp4")
+	rw.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+
+	err := a.videoStreamer.Run(rw, r, "rtsp://admin:1q2w3e4r5t6y@192.168.11.131:554/cam/realmonitor?channel=1&subtype=1", false)
+	if err != nil {
+		log.Printf("error: %s", err)
+		rw.WriteHeader(http.StatusInternalServerError)
+		_, _ = rw.Write([]byte("<h1>500 Internal server error</h1>"))
+	}
+
+	return 200, err
+}
+
+type appContext struct {
+	videoStreamer *vs.VideoStreamer
+}
+
+type appHandler struct {
+	*appContext
+	h func(*appContext, http.ResponseWriter, *http.Request) (int, error)
+}
+
+func (ah appHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// Updated to pass ah.appContext as a parameter to our handler type.
+	status, err := ah.h(ah.appContext, w, r)
+	if err != nil {
+		log.Printf("HTTP %d: %q", status, err)
+		switch status {
+		case http.StatusNotFound:
+			http.NotFound(w, r)
+			// And if we wanted a friendlier error page:
+			// err := ah.renderTemplate(w, "http_404.tmpl", nil)
+		case http.StatusInternalServerError:
+			http.Error(w, http.StatusText(status), status)
+		default:
+			http.Error(w, http.StatusText(status), status)
+		}
+	}
+}
 
 func main() {
+	ac := &appContext{
+		videoStreamer: &vs.VideoStreamer{
+			Mutex:      &sync.RWMutex{},
+			Dispatcher: &vs.StreamerDispatcher{},
+		},
+	}
 
 	r := mux.NewRouter()
 
@@ -100,14 +146,14 @@ func main() {
 	v1.Handle("/autosearch", autoSearchHandler).Methods("GET")
 	v1.Handle("/manualsearch", manualSearchHandler).Methods("GET")
 	v1.Handle("/video", videoHandler).Methods("GET")
-	v1.Handle("/videostream", videoStreamHandler).Methods("GET")
+	v1.Handle("/videostream", appHandler{ac, VideoStreamHandler}).Methods("GET")
 
 	srv := &http.Server{
 		Addr: ":8002",
 		// Good practice to set timeouts to avoid Slowloris attacks.
-		WriteTimeout: time.Second * 15,
-		ReadTimeout:  time.Second * 15,
-		IdleTimeout:  time.Second * 60,
+		WriteTimeout: time.Second * 150000, // timeout write to io
+		ReadTimeout:  time.Second * 150000,
+		IdleTimeout:  time.Second * 600000,
 		Handler:      r,
 	}
 
