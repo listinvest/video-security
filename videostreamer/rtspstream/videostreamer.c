@@ -16,15 +16,11 @@
 #include <string.h>
 #include "videostreamer.h"
 
-static void
-__vs_log_packet(const AVFormatContext * const,
-		const AVPacket * const, const char * const);
+static void __vs_log_packet(const AVFormatContext * const, const AVPacket * const, const char * const);
 
-void
-vs_setup(void)
+void vs_setup(void)
 {
 	// Set up library.
-
 	// Register muxers, demuxers, and protocols.
 	av_register_all();
 
@@ -34,12 +30,9 @@ vs_setup(void)
 	avformat_network_init();
 }
 
-struct VSInput *
-vs_open_input(const char * const input_format_name,
-		const char * const input_url, const bool verbose)
+struct VSInput * vs_open_input(const char * const input_format_name, const char * const input_url, const bool verbose)
 {
-	if (!input_format_name || strlen(input_format_name) == 0 ||
-			!input_url || strlen(input_url) == 0) {
+	if (!input_format_name || strlen(input_format_name) == 0 || !input_url || strlen(input_url) == 0) {
 		printf("%s\n", strerror(EINVAL));
 		return NULL;
 	}
@@ -58,8 +51,25 @@ vs_open_input(const char * const input_format_name,
 		return NULL;
 	}
 
-	int const open_status = avformat_open_input(&input->format_ctx, input_url,
-			input_format, NULL);
+	AVDictionary* dictionary = NULL;
+	if (av_dict_set(&dictionary, "rtsp_transport", "tcp", 0) < 0)
+	{
+		printf("input rtsp_transport error\n");
+		//printf("unable to rtsp_transport: %s\n", av_err2str(open_status));
+		vs_destroy_input(input);
+		return NULL;
+	}
+
+    if (av_dict_set(&dictionary, "probesize","131072", 0) < 0){
+		printf("input probesize error\n");
+       	//printf("unable to probesize: %s\n", av_err2str(open_status));
+		vs_destroy_input(input);
+		return NULL;
+    }
+
+	
+
+	int const open_status = avformat_open_input(&input->format_ctx, input_url, input_format, NULL);
 	if (open_status != 0) {
 		printf("unable to open input: %s\n", av_err2str(open_status));
 		vs_destroy_input(input);
@@ -106,8 +116,7 @@ vs_open_input(const char * const input_format_name,
 	return input;
 }
 
-void
-vs_destroy_input(struct VSInput * const input)
+void vs_destroy_input(struct VSInput * const input)
 {
 	if (!input) {
 		return;
@@ -121,9 +130,9 @@ vs_destroy_input(struct VSInput * const input)
 	free(input);
 }
 
-struct VSOutput *
-vs_open_output(const char * const output_format_name,
-		const char * const output_url, const struct VSInput * const input,
+struct VSOutput * vs_open_output(const char * const output_format_name,
+		const char * const output_url,
+		const struct VSInput * const input,
 		const bool verbose)
 {
 	if (!output_format_name || strlen(output_format_name) == 0 ||
@@ -140,16 +149,14 @@ vs_open_output(const char * const output_format_name,
 	}
 
 
-	AVOutputFormat * const output_format = av_guess_format(output_format_name,
-			NULL, NULL);
+	AVOutputFormat * const output_format = av_guess_format(output_format_name, NULL, NULL);
 	if (!output_format) {
 		printf("output format not found\n");
 		vs_destroy_output(output);
 		return NULL;
 	}
 
-	if (avformat_alloc_output_context2(&output->format_ctx, output_format,
-				NULL, NULL) < 0) {
+	if (avformat_alloc_output_context2(&output->format_ctx, output_format, NULL, NULL) < 0) {
 		printf("unable to create output context\n");
 		vs_destroy_output(output);
 		return NULL;
@@ -165,11 +172,9 @@ vs_open_output(const char * const output_format_name,
 		return NULL;
 	}
 
-	AVStream * const in_stream = input->format_ctx->streams[
-		input->video_stream_index];
+	AVStream * const in_stream = input->format_ctx->streams[input->video_stream_index];
 
-	if (avcodec_parameters_copy(out_stream->codecpar,
-				in_stream->codecpar) < 0) {
+	if (avcodec_parameters_copy(out_stream->codecpar, in_stream->codecpar) < 0) {
 		printf("unable to copy codec parameters\n");
 		vs_destroy_output(output);
 		return NULL;
@@ -245,8 +250,7 @@ vs_open_output(const char * const output_format_name,
 	return output;
 }
 
-void
-vs_destroy_output(struct VSOutput * const output)
+void vs_destroy_output(struct VSOutput * const output)
 {
 	if (!output) {
 		return;
@@ -273,9 +277,7 @@ vs_destroy_output(struct VSOutput * const output)
 // -1 if error
 // 0 if nothing useful read (e.g., non-video packet)
 // 1 if read a packet
-int
-vs_read_packet(const struct VSInput * input, AVPacket * const pkt,
-		const bool verbose)
+int vs_read_packet(const struct VSInput * input, AVPacket * const pkt, const bool verbose)
 {
 	if (!input || !pkt) {
 		printf("%s\n", strerror(errno));
@@ -284,17 +286,13 @@ vs_read_packet(const struct VSInput * input, AVPacket * const pkt,
 
 	memset(pkt, 0, sizeof(AVPacket));
 
-
 	// Read encoded frame (as a packet).
-
 	if (av_read_frame(input->format_ctx, pkt) != 0) {
 		printf("unable to read frame\n");
 		return -1;
 	}
 
-
 	// Ignore it if it's not our video stream.
-
 	if (pkt->stream_index != input->video_stream_index) {
 		if (verbose) {
 			printf("skipping packet from input stream %d, our video is from stream %d\n",
@@ -304,7 +302,6 @@ vs_read_packet(const struct VSInput * input, AVPacket * const pkt,
 		av_packet_unref(pkt);
 		return 0;
 	}
-
 
 	if (verbose) {
 		__vs_log_packet(input->format_ctx, pkt, "in");
@@ -320,8 +317,7 @@ vs_read_packet(const struct VSInput * input, AVPacket * const pkt,
 // Returns:
 // -1 if error
 // 1 if we wrote the packet
-int
-vs_write_packet(const struct VSInput * const input,
+int vs_write_packet(const struct VSInput * const input,
 		struct VSOutput * const output, AVPacket * const pkt, const bool verbose)
 {
 	if (!input || !output || !pkt) {
@@ -461,9 +457,7 @@ vs_write_packet(const struct VSInput * const input,
 	return 1;
 }
 
-static void
-__vs_log_packet(const AVFormatContext * const format_ctx,
-		const AVPacket * const pkt, const char * const tag)
+static void __vs_log_packet(const AVFormatContext * const format_ctx,	const AVPacket * const pkt, const char * const tag)
 {
 		AVRational * const time_base = &format_ctx->streams[pkt->stream_index]->time_base;
 

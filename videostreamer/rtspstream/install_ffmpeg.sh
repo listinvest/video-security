@@ -36,6 +36,6 @@ fi
 #export GOPATH=$HOME/projects/
 #export GOROOT=$HOME/go
 #export PATH=$PATH:$GOROOT/bin:$HOME/compiled/bin/
-#export LD_LIBRARY_PATH=/home/mint/compiled/lib/
+#export LD_LIBRARY_PATH=$HOME/compiled/lib/
 #export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$HOME/compiled/lib/pkgconfig
 #source ~/.bashrc
