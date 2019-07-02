@@ -3,8 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -85,15 +87,29 @@ var helloHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request)
 
 //videooHandler video handler
 var videoHandler = http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-	http.ServeFile(rw, r, "templates/video.html")
+	templates, err := template.ParseFiles(
+		"./templates/video.html",
+		"./templates/cell.tmpl",
+	)
+
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = templates.Execute(rw, nil)
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+	}
 })
 
-//VideoStreamHandler lk
-func VideoStreamHandler(a *appContext, rw http.ResponseWriter, r *http.Request) (int, error) {
+//videoStreamHandler lk
+func videoStreamHandler(a *appContext, rw http.ResponseWriter, r *http.Request) (int, error) {
 	rw.Header().Set("Content-Type", "video/mp4")
 	rw.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 
-	err := a.videoStreamer.Run(rw, r, "rtsp://admin:1q2w3e4r5t6y@192.168.11.131:554/cam/realmonitor?channel=1&subtype=1", false)
+	url := getUrl(r)
+	err := a.videoStreamer.Run(rw, r, url, false)
 	if err != nil {
 		log.Printf("error: %s", err)
 		rw.WriteHeader(http.StatusInternalServerError)
@@ -101,6 +117,25 @@ func VideoStreamHandler(a *appContext, rw http.ResponseWriter, r *http.Request) 
 	}
 
 	return 200, err
+}
+
+//getUrl url from request
+func getUrl(r *http.Request) string {
+	defaultURL := "rtsp://admin:1q2w3e4r5t6y@192.168.11.131:554/cam/realmonitor?channel=1&subtype=1"
+
+	urls, ok := r.URL.Query()["url"]
+
+	if !ok {
+		log.Println("Url Param 'key' is missing")
+		return defaultURL
+	}
+
+	if len(urls[0]) > 0 {
+		url := strings.Replace(urls[0], "+", "?", -1)
+		return strings.Replace(url, "$", "&", -1)
+	}
+
+	return defaultURL
 }
 
 type appContext struct {
@@ -146,7 +181,7 @@ func main() {
 	v1.Handle("/autosearch", autoSearchHandler).Methods("GET")
 	v1.Handle("/manualsearch", manualSearchHandler).Methods("GET")
 	v1.Handle("/video", videoHandler).Methods("GET")
-	v1.Handle("/videostream", appHandler{ac, VideoStreamHandler}).Methods("GET")
+	v1.Handle("/videostream", appHandler{ac, videoStreamHandler}).Methods("GET")
 
 	srv := &http.Server{
 		Addr: ":8002",
