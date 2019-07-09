@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -25,7 +24,7 @@ var autoSearchHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Req
 	bizTask := autosearch.DeviceTask{
 		Task: taskDispatcher.BizTask{
 			ID:   "1",
-			Name: "test",
+			Name: "auto search devices",
 		},
 	}
 
@@ -33,60 +32,39 @@ var autoSearchHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Req
 	dispatcher.RunTask(&bizTask)
 
 	devices := bizTask.Result.Devices
-	j, _ := json.Marshal(devices)
-	res := string(j)
-	fmt.Fprintf(w, "Find: %s", res)
+
+	w.Header().Set("Content-Type", "application/json")
+	json, _ := json.Marshal(devices)
+	w.Write(json)
 })
 
 //manualSearchHandler
 var manualSearchHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
+	queryValues := r.URL.Query()
+
 	bizTask := manualsearch.DeviceTask{
-		Ips:   "192.168.11.100-192.168.11.185, 192.168.11.186",
-		Ports: "80",
+		Ips:   queryValues.Get("ips"),
+		Ports: queryValues.Get("ports"),
 		Task: taskDispatcher.BizTask{
 			ID:   "1",
-			Name: "test",
+			Name: "manual search devices",
 		},
 	}
 
 	dispatcher := taskDispatcher.GetInstance()
 	dispatcher.RunAsyncTask(&bizTask)
-
-	fmt.Println("RunAsyncTask")
-
-	start := time.Now()
-
-	for {
-		time.Sleep(1 * time.Second)
-
-		t := dispatcher.GetTask(bizTask.Task.ID)
-		if t == nil {
-			break
-		}
-
-		if time.Since(start) > (3 * time.Second) {
-			break
-		}
-	}
-
-	fmt.Println("RunAsyncTask End")
-
-	dispatcher.AbortTask(bizTask.Task.ID)
+	dispatcher.Wait(&bizTask)
 
 	devices := bizTask.Result.Devices
-	j, _ := json.Marshal(devices)
-	res := string(j)
-	fmt.Fprintf(w, "Find: %s", res)
+
+	w.Header().Set("Content-Type", "application/json")
+	json, _ := json.Marshal(devices)
+	w.Write(json)
 })
 
-//helloHandler home handler
-var helloHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello!")
-})
-
-//videooHandler video handler
-var videoHandler = http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+//indexHandler index handler
+var indexHandler = http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 	tpl := template.New("index").Delims("[[", "]]")
 	tpl, err := tpl.ParseFiles("www/index.html")
 
@@ -94,8 +72,6 @@ var videoHandler = http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	fmt.Println(tpl.DefinedTemplates())
 
 	err = tpl.ExecuteTemplate(rw, "index.html", nil)
 	if err != nil {
@@ -180,12 +156,11 @@ func main() {
 	v1.Handle("/js/{{s+}.js}", http.StripPrefix("/v1/js/", http.FileServer(http.Dir("www/js"))))
 	v1.Handle("/css/{{s+}.css}", http.StripPrefix("/v1/css/", http.FileServer(http.Dir("www/css"))))
 
-	v1.Handle("/get-token", auth.GetTokenHandler).Methods("GET")
-	v1.Handle("/home", auth.MiddlewareHandler(helloHandler)).Methods("GET")
-	v1.Handle("/autosearch", autoSearchHandler).Methods("GET")
-	v1.Handle("/manualsearch", manualSearchHandler).Methods("GET")
-	v1.Handle("/video", videoHandler).Methods("GET")
-	v1.Handle("/videostream", appHandler{ac, videoStreamHandler}).Methods("GET")
+	v1.Handle("/", indexHandler)
+	v1.Handle("/get-token", auth.GetTokenHandler)
+	v1.Handle("/autosearch", autoSearchHandler)
+	v1.Handle("/manualsearch", manualSearchHandler)
+	v1.Handle("/videostream", appHandler{ac, videoStreamHandler})
 
 	srv := &http.Server{
 		Addr: ":8002",

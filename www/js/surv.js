@@ -23,10 +23,12 @@ var survselect = Vue.component('surv-select', {
     },
     template: `
         <div>  
-            <select v-model="selected">
-                <option v-for="item in items" :value="item.id">{{ item.name }}</option>
-            </select>
-            <span>Выбрана раскладка: {{ selected }}</span>
+            <md-field>
+                <label for="select_serv_id">Раскладка</label>
+                <md-select v-model="selected" name="select_serv_id" id="select_serv_id">
+                    <md-option v-for="item in items" :value="item.id">{{ item.name }}</md-option>
+                </md-select>
+            </md-field>
         </div>
     `,
 })
@@ -86,32 +88,40 @@ var survcell = Vue.component('surv-cell', {
         start: function() {
           
             // ? -> +
-            url = this.srcInput.replace("?", "%2B");
+            url = this.srcInput.replace("?", "%2B")
             // & -> $
-            url = url.replace("&", "%24");
+            url = url.replace("&", "%24")
 
-            this.srcVideo = document.location.protocol + "//" + document.location.host + "/v1/videostream?url=" + url;
+            this.srcVideo = document.location.protocol + "//" + document.location.host + "/v1/videostream?url=" + url
         }
     },
     template: `
-        <div class="div-surv-cell">
-            <div class="div-cell-video">
-                <video :src="srcVideo" autoplay controls class="cell-video"/>
-            </div>
-            <div>
-                <table class="cell-table-input">
+    <md-card>
+        <md-ripple>
+            <md-card-content>
+                <div class="div-cell-video">
+                    <video :src="srcVideo" autoplay preload="none" class="cell-video"/>
+                </div>
+            </md-card-content>
+
+            <md-card-actions>
+                <table class="table-cell-input">
                 <tr>
                     <td>
-                        <input type="text" v-model="srcInput" class="cell-input-url"/>
+                        <md-field md-inline>
+                            <label>RTSP url</label>
+                            <md-input v-model="srcInput"></md-input>
+                        </md-field>
                     </td>
                     <td>
-                        <input id="btnOk" type="button" value="OK" @click="start" class="cell-input-start"/>
+                        <md-button class="md-raised md-primary" @click="start">OK</md-button>
                     </td>
                 </tr>
                 </table>
-            </div>
-        </div>
-        `
+            </md-card-actions>
+        </md-ripple>
+    </md-card>
+    `
 })
 
 // register the surv component

@@ -11,12 +11,14 @@ import (
 )
 
 const (
-	url = "http://%s:%v/onvif/device_service"
+	urlPattern = "http://%s:%v/onvif/device_service"
 )
 
 //Device info about device
 type Device struct {
 	Xaddr string
+	IP    string
+	Port  int
 }
 
 //DeviceTask auto search devices in netwotk
@@ -67,7 +69,7 @@ func (task *DeviceTask) Run() {
 				return
 			}
 
-			endpoint := fmt.Sprintf(url, ip, port)
+			endpoint := fmt.Sprintf(urlPattern, ip, port)
 
 			fmt.Println("Request ", endpoint)
 
@@ -77,12 +79,16 @@ func (task *DeviceTask) Run() {
 				continue
 			}
 
-			newDevice := Device{}
-			newDevice.Xaddr = endpoint
+			newDevice := Device{
+				Xaddr: endpoint,
+				IP:    ip,
+				Port:  port,
+			}
 			result = append(result, newDevice)
 		}
 	}
 
+	task.Task.IsCompete = true
 	task.Result = createResult(true, result)
 }
 
@@ -90,6 +96,11 @@ func (task *DeviceTask) Run() {
 func (task *DeviceTask) Abort() {
 	task.Task.IsCanceled = true
 	fmt.Println("Manual search task Abort")
+}
+
+//IsCompete true if complete
+func (task *DeviceTask) IsCompete() bool {
+	return task.Task.IsCompete
 }
 
 // {{{ inner implementation

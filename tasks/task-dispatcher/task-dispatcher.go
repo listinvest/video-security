@@ -9,6 +9,7 @@ type BizTaskRunner interface {
 	GetID() string
 	Run()
 	Abort()
+	IsCompete() bool
 }
 
 //BizTask base info about task
@@ -16,6 +17,7 @@ type BizTask struct {
 	ID         string
 	Name       string
 	IsCanceled bool
+	IsCompete  bool
 	Result     BizTaskResult
 }
 
@@ -51,6 +53,16 @@ func (dispatcher *taskDispatcher) RunAsyncTask(task BizTaskRunner) {
 	go runTaskInternal(dispatcher, task, ch)
 	go waitTaskInternal(dispatcher, ch)
 }
+
+//RunTask run task async
+func (dispatcher *taskDispatcher) Wait(task BizTaskRunner) {
+	for {
+		if task.IsCompete() {
+			break
+		}
+	}
+}
+
 
 //GetTask return task if she's running
 func (dispatcher *taskDispatcher) GetTask(taskID string) interface{} {
