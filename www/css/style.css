@@ -1,0 +1,57 @@
+html, body {
+    height: 95%;
+}
+
+.div-app-container {
+    width: 100%;
+    height: 100%;
+}
+
+.div-surv-container {
+    width: 100%;
+    height: 100%;
+}
+
+.div-surv-grid {
+    width: 100%;
+    height: 100%;
+}
+
+.div-surv-cell {
+    width: 49%;
+    height: 49%;
+    float: left;    
+    margin-right: 10px;
+    margin-bottom: 25px;
+}
+
+.div-cell-video {
+    width: 100%; 
+    height: 100%;
+    background-color: black;
+}
+
+.cell-video {
+    width: 100%; 
+    height: 100%;
+}
+
+.cell-table-input {
+    width: 100%; 
+}
+
+.cell-table-input > tr > td:first-child {
+    width: 100%; 
+}
+
+.cell-table-input > tr > td:last-child {
+    width: 40px; 
+}
+
+.cell-input-url {
+    width: 99%; 
+}
+
+.cell-input-start {
+    width: 40px; 
+}

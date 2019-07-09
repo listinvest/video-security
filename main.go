@@ -87,17 +87,17 @@ var helloHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request)
 
 //videooHandler video handler
 var videoHandler = http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-	templates, err := template.ParseFiles(
-		"./templates/video.html",
-		"./templates/cell.tmpl",
-	)
+	tpl := template.New("index").Delims("[[", "]]")
+	tpl, err := tpl.ParseFiles("www/index.html")
 
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	err = templates.Execute(rw, nil)
+	fmt.Println(tpl.DefinedTemplates())
+
+	err = tpl.ExecuteTemplate(rw, "index.html", nil)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 	}
@@ -175,7 +175,11 @@ func main() {
 
 	r := mux.NewRouter()
 
-	v1 := r.PathPrefix("/v1/").Subrouter()
+	v1 := r.PathPrefix("/v1").Subrouter()
+
+	v1.Handle("/js/{{s+}.js}", http.StripPrefix("/v1/js/", http.FileServer(http.Dir("www/js"))))
+	v1.Handle("/css/{{s+}.css}", http.StripPrefix("/v1/css/", http.FileServer(http.Dir("www/css"))))
+
 	v1.Handle("/get-token", auth.GetTokenHandler).Methods("GET")
 	v1.Handle("/home", auth.MiddlewareHandler(helloHandler)).Methods("GET")
 	v1.Handle("/autosearch", autoSearchHandler).Methods("GET")
