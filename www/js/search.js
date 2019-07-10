@@ -10,8 +10,8 @@ var autosearch = Vue.component('auto-search', {
             var self = this;
             self.found = []
             this.$http.get('http://192.168.11.4:8002/v1/autosearch').then(function(response) {
-                if(response.status == "200") {
-                    self.found = response.data
+                if(!response.data.IsError) {
+                    self.found =  JSON.parse(response.data.Data)
                 }
             })
         }
@@ -28,8 +28,8 @@ var autosearch = Vue.component('auto-search', {
             </md-table-row>
 
             <md-table-row v-for="item in found">
-                <md-table-cell md-numeric>{{ item.IP }}</md-table-cell>
-                <md-table-cell>{{ item.Port }}</md-table-cell>
+                <md-table-cell md-numeric>{{ item.ip }}</md-table-cell>
+                <md-table-cell>{{ item.port }}</md-table-cell>
             </md-table-row>
         </md-table>
     </div>
@@ -50,8 +50,8 @@ var manualsearch = Vue.component('manual-search', {
             var self = this;
             self.found = []
             this.$http.get('http://192.168.11.4:8002/v1/manualsearch?ips='+ self.ips + "&ports=" + self.ports).then(function(response) {
-                if(response.status == "200") {
-                    self.found = response.data
+                if(!response.data.IsError) {
+                    self.found = JSON.parse(response.data.Data)
                 }
             })
         }
@@ -80,8 +80,8 @@ var manualsearch = Vue.component('manual-search', {
             </md-table-row>
 
             <md-table-row v-for="item in found">
-                <md-table-cell md-numeric>{{ item.IP }}</md-table-cell>
-                <md-table-cell>{{ item.Port }}</md-table-cell>
+                <md-table-cell md-numeric>{{ item.ip }}</md-table-cell>
+                <md-table-cell>{{ item.port }}</md-table-cell>
             </md-table-row>
         </md-table>
     </div>

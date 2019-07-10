@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"sync"
 
-	"../../pipe"
+	"videoSecurity/videostreamer/pipe"
 )
 
 // #include "videostreamer.h"

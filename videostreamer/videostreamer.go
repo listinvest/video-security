@@ -5,8 +5,14 @@ import (
 	"net/http"
 	"sync"
 
-	"../videostreamer/rtspstream"
+	"videoSecurity/videostreamer/rtspstream"
 )
+
+//IVideoStreamer streamer
+type IVideoStreamer interface {
+	Run(rw http.ResponseWriter, r *http.Request, rtsp string, verbose bool) error 
+}
+
 
 //VideoStreamer streamer
 type VideoStreamer struct {

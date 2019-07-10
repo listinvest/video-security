@@ -7,7 +7,7 @@ import (
 	"sync"
 	"unsafe"
 
-	"../../pipe"
+	"videoSecurity/videostreamer/pipe"
 )
 
 // #include "videostreamer.h"

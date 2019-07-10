@@ -5,59 +5,42 @@ import (
 	"net/http"
 	"time"
 
-	taskDispatcher "../task-dispatcher"
-	ipparse "./ipparse"
-	portparse "./portparse"
+	"videoSecurity/tasks/base"
+	"videoSecurity/tasks/models"
+	"videoSecurity/tasks/manualsearch/ipparse"
+	"videoSecurity/tasks/manualsearch/portparse"
 )
 
 const (
 	urlPattern = "http://%s:%v/onvif/device_service"
 )
 
-//Device info about device
-type Device struct {
-	Xaddr string
-	IP    string
-	Port  int
-}
-
-//DeviceTask auto search devices in netwotk
+//DeviceTask search devices in network by paramerters
 type DeviceTask struct {
 	Ips    string
 	Ports  string
-	Task   taskDispatcher.BizTask
-	Result DeviceTaskResult
-}
-
-//DeviceTaskResult search results
-type DeviceTaskResult struct {
-	Devices []Device
-	Result  taskDispatcher.BizTaskResult
+	Task   base.BizTask
+	Result models.DeviceTaskResult
 }
 
 //GetID ID task
 func (task *DeviceTask) GetID() string {
-	//fmt.Println("Manual search task GetID")
 	return task.Task.ID
 }
 
 //Run run task
 func (task *DeviceTask) Run() {
-	fmt.Println("Manual search task Run")
-
-	result := []Device{}
+	result := make([]models.Device, 0)
 
 	ips, err := ipparse.GetArrayIP(task.Ips)
 	if err != nil {
-		fmt.Println(err)
-		task.Result = createResult(false, result)
+		task.createErrorResult(result, err)
 		return
 	}
 
 	ports, err := portparse.GetArrayPort(task.Ports)
 	if err != nil {
-		fmt.Println(err)
-		task.Result = createResult(false, result)
+		task.createErrorResult(result, err)
 		return
 	}
 
@@ -65,7 +48,7 @@ func (task *DeviceTask) Run() {
 		for _, port := range ports {
 
 			if task.Task.IsCanceled {
-				task.Result = createResult(false, result)
+				task.createSuccessResult(result)
 				return
 			}
 
@@ -73,29 +56,26 @@ func (task *DeviceTask) Run() {
 
 			fmt.Println("Request ", endpoint)
 
-			err := ping(endpoint)
+			err := task.ping(endpoint)
 			if err != nil {
 				fmt.Println(err)
 				continue
 			}
 
-			newDevice := Device{
-				Xaddr: endpoint,
-				IP:    ip,
-				Port:  port,
+			newDevice := models.Device {
+				Xaddr:  endpoint,
 			}
 			result = append(result, newDevice)
 		}
 	}
 
 	task.Task.IsCompete = true
-	task.Result = createResult(true, result)
+	task.createSuccessResult(result)
 }
 
 //Abort executing task
 func (task *DeviceTask) Abort() {
 	task.Task.IsCanceled = true
-	fmt.Println("Manual search task Abort")
 }
 
 //IsCompete true if complete
@@ -106,7 +86,7 @@ func (task *DeviceTask) IsCompete() bool {
 // {{{ inner implementation
 
 //Ping url to search for a device
-func ping(endpoint string) (err error) {
+func (task *DeviceTask) ping(endpoint string) (err error) {
 	httpClient := new(http.Client)
 	httpClient.Timeout = time.Duration(1 * time.Second)
 
@@ -118,12 +98,24 @@ func ping(endpoint string) (err error) {
 	return nil
 }
 
-//createResult retutn result
-func createResult(isOk bool, devices []Device) DeviceTaskResult {
-	return DeviceTaskResult{
+//createResult error
+func (task *DeviceTask) createErrorResult(devices []models.Device, err error) {
+	task.Result = models.DeviceTaskResult {
 		Devices: devices,
-		Result: taskDispatcher.BizTaskResult{
-			IsOk: isOk,
+		Result: base.BizTaskResult {
+			IsOk: false,
+			IsError: true,
+			Error: err.Error(),
+		},
+	}
+}
+
+//createResult success
+func (task *DeviceTask) createSuccessResult(devices []models.Device) {
+	task.Result = models.DeviceTaskResult {
+		Devices: devices,
+		Result: base.BizTaskResult {
+			IsOk: true,
 		},
 	}
 }
