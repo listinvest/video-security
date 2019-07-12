@@ -125,7 +125,7 @@ var survcell = Vue.component('surv-cell', {
 })
 
 // register the surv component
-Vue.component('surv', {
+var surv = Vue.component('surv', {
     components: {
         'surv-select': survselect,
         'surv-grid': survgrid,

@@ -16,3 +16,11 @@ func (h *TestHelper) CreateTestDeviceService(rep interfaces.IDeviceRepository) i
 		rep,
 	}
 }
+
+//CreateTestDeviceAuthService create
+func (h *TestHelper) CreateTestDeviceAuthService(rep interfaces.IDeviceAuthRepository) interfaces.IDeviceAuthService {
+	return &DeviceAuthService{
+		&logwriter.Logger{},
+		rep,
+	}
+}

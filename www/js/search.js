@@ -1,3 +1,6 @@
+const URL_Autosearch = 'http://192.168.11.4:8002/v1/autosearch'
+const URL_Manualsearch = 'http://192.168.11.4:8002/v1/manualsearch'
+
 // register the auto-search component
 var autosearch = Vue.component('auto-search', {
     data: function () {
@@ -11,15 +14,21 @@ var autosearch = Vue.component('auto-search', {
             var self = this;
             self.isProgress = true
             self.found = []
-            this.$http.get('http://192.168.11.4:8002/v1/autosearch').then(function(response) {
+            this.$http.get(URL_Autosearch)
+            .then(function(response) {
                 if(!response.data.IsError) {
                     self.found = JSON.parse(response.data.Data)
                 }
+                else {
+                    alert(response.data.ErrorMessage)
+                }
                 self.isProgress = false
             })
+            .catch(error => console.log(error));
         }
     },
     template: `
+    <div>
         <div>
             <md-button class="md-raised md-primary" @click="search">
                 Search
@@ -48,12 +57,17 @@ var manualsearch = Vue.component('manual-search', {
             var self = this;
             self.isProgress = true
             self.found = []
-            this.$http.get('http://192.168.11.4:8002/v1/manualsearch?ips='+ self.ips + "&ports=" + self.ports).then(function(response) {
+            this.$http.get(URL_Manualsearch + '?ips='+ self.ips + "&ports=" + self.ports)
+            .then(function(response) {
                 if(!response.data.IsError) {
                     self.found = JSON.parse(response.data.Data)
                 }
+                else {
+                    alert(response.data.ErrorMessage)
+                }
                 self.isProgress = false
             })
+            .catch(error => console.log(error));
         }
     },
     template: `
@@ -92,12 +106,22 @@ var findDevides = Vue.component('find-devices', {
     },
     methods: {
         add: function(row) {
-            this.$http.get('http://192.168.11.4:8002/v1/device/add/' + row.ip + '/' + row.port).then(function(response) {
+            var self = this;
+
+            this.$http.get(URL_App_Devices_Add + row.ip + '/' + row.port)
+            .then(function(response) {
                 if(response.data.IsError) {
                     alert(response.Data.ErrorMessage)
-                  //  self.found =  JSON.parse(response.data.Data)
+                    return
+                }
+
+                for(var i = 0; i < self.found.length; i++) { 
+                    if (self.found[i].ip === row.ip && self.found[i].port === row.port) {
+                        self.found.splice(i, 1); 
+                    }
                 }
             })
+            .catch(error => console.log(error));
         }
     },
     template: `

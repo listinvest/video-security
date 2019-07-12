@@ -11,17 +11,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-//TestBaseGetKeyPrefixEmpty get empty prefix
+//Test_BaseRepository_Get_KeyPrefixEmpty get empty prefix
 //SUCCESS IF RETURN ERRORS
-func TestBaseGetKeyPrefixEmpty(t *testing.T) {
+func Test_BaseRepository_Get_KeyPrefixEmpty(t *testing.T) {
 	rep := BaseRepository{}
 	_, err := rep.GetKeyPrefix()
 	assert.Error(t, err)
 }
 
-//TestBaseGetKeyPrefixNotEmpty get isn't empty prefix
+//Test_BaseRepository_KeyPrefixNotEmpty get isn't empty prefix
 //SUCCESS IF RETURN WITHOUT ERRORS
-func TestBaseGetKeyPrefixNotEmpty(t *testing.T) {
+func Test_BaseRepository_Get_KeyPrefixNotEmpty(t *testing.T) {
 	rep := BaseRepository{}
 	rep.KeyPrefix = "some_prefix"
 	real, err := rep.GetKeyPrefix()
@@ -30,18 +30,18 @@ func TestBaseGetKeyPrefixNotEmpty(t *testing.T) {
 	assert.Equal(t, real, rep.KeyPrefix)
 }
 
-//TestBaseGetKeyEmpty get isn't empty key
+//Test_BaseRepository_Get_KeyEmpty get isn't empty key
 //SUCCESS IF RETURN WITHOUT ERRORS
-func TestBaseGetKeyEmpty(t *testing.T) {
+func Test_BaseRepository_Get_KeyEmpty(t *testing.T) {
 	rep := BaseRepository{}
 	rep.KeyPrefix = "some_prefix"
 	_, err := rep.GetKey("")
 	assert.Error(t, err)
 }
 
-//TestBaseGetKeyNotEmpty get isn't empty key
+//Test_BaseRepository_Get_KeyNotEmpty get isn't empty key
 //SUCCESS IF RETURN WITHOUT ERRORS
-func TestBaseGetKeyNotEmpty(t *testing.T) {
+func Test_BaseRepository_Get_KeyNotEmpty(t *testing.T) {
 	rep := BaseRepository{}
 	rep.KeyPrefix = "some_prefix"
 	keyName := "some_key"
@@ -52,35 +52,35 @@ func TestBaseGetKeyNotEmpty(t *testing.T) {
 	assert.Equal(t, real, expected)
 }
 
-//TestBaseEncodeError encode error
+//Test_BaseRepository_EncodeError encode error
 //SUCCESS IF RETURN ERRORS
-func TestBaseEncodeError(t *testing.T) {
+func Test_BaseRepository_EncodeError(t *testing.T) {
 	rep := BaseRepository{}
 	_, err := rep.Encode(nil)
 	assert.Error(t, err)
 }
 
-//TestBaseEncodeSuccess encode success
+//Test_BaseRepository_EncodeSuccess encode success
 //SUCCESS IF RETURN WITHOUT ERRORS
-func TestBaseEncodeSuccess(t *testing.T) {
+func Test_BaseRepository_EncodeSuccess(t *testing.T) {
 	rep := BaseRepository{}
 	m := models.Device{}
 	_, err := rep.Encode(m)
 	assert.NoError(t, err)
 }
 
-//TestBaseDecodeDataError decode error
+//Test_BaseRepository_DecodeDataError decode error
 //SUCCESS IF RETURN ERRORS
-func TestBaseDecodeDataError(t *testing.T) {
+func Test_BaseRepository_DecodeDataError(t *testing.T) {
 	rep := BaseRepository{}
 	m := models.Device{}
 	err := rep.Decode(nil, &m)
 	assert.Error(t, err)
 }
 
-//TestBaseDecodeModelError decode error
+//Test_BaseRepository_DecodeModelError decode error
 //SUCCESS IF RETURN ERRORS
-func TestBaseDecodeModelError(t *testing.T) {
+func Test_BaseRepository_DecodeModelError(t *testing.T) {
 	rep := BaseRepository{}
 	m := models.Device{}
 	bytes, err := rep.Encode(m)
@@ -90,9 +90,9 @@ func TestBaseDecodeModelError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-//TestBaseDecodeSuccess encode success
+//Test_BaseRepository_DecodeSuccess encode success
 //SUCCESS IF RETURN WITHOUT ERRORS
-func TestBaseDecodeSuccess(t *testing.T) {
+func Test_BaseRepository_DecodeSuccess(t *testing.T) {
 	rep := BaseRepository{}
 	m := models.Device{}
 	bytes, err := rep.Encode(m)
@@ -102,9 +102,9 @@ func TestBaseDecodeSuccess(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-//TestBaseAddOrUpdateKeyEmpty save with empty key
+//Test_BaseRepository_AddOrUpdate_KeyEmpty save with empty key
 //SUCCESS IF RETURN WITHOUT ERRORS
-func TestBaseAddOrUpdateKeyEmpty(t *testing.T) {
+func Test_BaseRepository_AddOrUpdate_KeyEmpty(t *testing.T) {
 	rep := BaseRepository{}
 
 	var e interface{}
@@ -114,9 +114,9 @@ func TestBaseAddOrUpdateKeyEmpty(t *testing.T) {
 	assert.Error(t, err)
 }
 
-//TestBaseAddOrUpdateSuccess save success
+//Test_BaseRepository_AddOrUpdate_Success save success
 //SUCCESS IF RETURN WITHOUT ERRORS
-func TestBaseAddOrUpdateSuccess(t *testing.T) {
+func Test_BaseRepository_AddOrUpdate_Success(t *testing.T) {
 	dbHandler := new(mocks.IDbHandler)
 
 	rep := BaseRepository{}
@@ -133,9 +133,9 @@ func TestBaseAddOrUpdateSuccess(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-//TestBaseGetModelKeyEmpty get with empty key
+//Test_BaseRepository_Get_ModelKeyEmpty get with empty key
 //SUCCESS IF RETURN ERRORS
-func TestBaseGetModelKeyEmpty(t *testing.T) {
+func Test_BaseRepository_Get_ModelKeyEmpty(t *testing.T) {
 	rep := BaseRepository{}
 	mock := new(mocks.IBaseRepository)
 
@@ -145,9 +145,9 @@ func TestBaseGetModelKeyEmpty(t *testing.T) {
 	assert.Error(t, err)
 }
 
-//TestBaseGetKeyFake get with fake key
+//Test_BaseRepository_Get_KeyFake get with fake key
 //SUCCESS IF RETURN ERRORS
-func TestBaseGetKeyFake(t *testing.T) {
+func Test_BaseRepository_Get_KeyFake(t *testing.T) {
 	dbHandler := new(mocks.IDbHandler)
 	rep := BaseRepository{}
 	rep.IDbHandler = dbHandler
@@ -160,9 +160,9 @@ func TestBaseGetKeyFake(t *testing.T) {
 	assert.Error(t, err)
 }
 
-//TestBaseGetSuccess get with empty key
+//Test_BaseRepository_Get_Success get with empty key
 //SUCCESS IF RETURN ERRORS
-func TestBaseGetSuccess(t *testing.T) {
+func Test_BaseRepository_Get_Success(t *testing.T) {
 	dbHandler := new(mocks.IDbHandler)
 	rep := BaseRepository{}
 	rep.IDbHandler = dbHandler
@@ -181,9 +181,9 @@ func TestBaseGetSuccess(t *testing.T) {
 	assert.Equal(t, m, res)
 }
 
-//TestBaseRemoveKeyPrefixEmpty remove if prefix empty
+//Test_BaseRepository_Remove_KeyPrefixEmpty remove if prefix empty
 //SUCCESS IF RETURN ERRORS
-func TestBaseRemoveKeyPrefixEmpty(t *testing.T) {
+func Test_BaseRepository_Remove_KeyPrefixEmpty(t *testing.T) {
 	rep := BaseRepository{}
 	rep.KeyPrefix = ""
 
@@ -192,9 +192,9 @@ func TestBaseRemoveKeyPrefixEmpty(t *testing.T) {
 	assert.Error(t, err)
 }
 
-//TestBaseRemoveKeyNameEmpty remove if key empty
+//Test_BaseRepository_Remove_KeyNameEmpty remove if key empty
 //SUCCESS IF RETURN ERRORS
-func TestBaseRemoveKeyNameEmpty(t *testing.T) {
+func Test_BaseRepository_Remove_KeyNameEmpty(t *testing.T) {
 	rep := BaseRepository{}
 	rep.KeyPrefix = ""
 
@@ -203,9 +203,9 @@ func TestBaseRemoveKeyNameEmpty(t *testing.T) {
 	assert.Error(t, err)
 }
 
-//TestBaseRemoveSuccess remove success
+//Test_BaseRepository_Remove_Success remove success
 //SUCCESS IF RETURN WITHOUT ERRORS
-func TestBaseRemoveSuccess(t *testing.T) {
+func Test_BaseRepository_Remove_Success(t *testing.T) {
 	dbHandler := new(mocks.IDbHandler)
 	rep := BaseRepository{}
 	rep.IDbHandler = dbHandler
@@ -218,18 +218,18 @@ func TestBaseRemoveSuccess(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-//TestBaseRemoveSuccess get all with empty prefix
+//Test_BaseRepository_Remove_Success get all with empty prefix
 //SUCCESS IF RETURN ERRORS
-func TestBaseGetAllPrefixEmpty(t *testing.T) {
+func Test_BaseRepository_GetAll_PrefixEmpty(t *testing.T) {
 	rep := BaseRepository{}
 	mock := new(mocks.IBaseRepository)
 	_, err := rep.GetAll(mock)
 	assert.Error(t, err)
 }
 
-//TestBaseGetAllScanError get all with error from db
+//Test_BaseRepository_GetAll_ScanError get all with error from db
 //SUCCESS IF RETURN WITHOUT ERRORS
-func TestBaseGetAllScanError(t *testing.T) {
+func Test_BaseRepository_GetAll_ScanError(t *testing.T) {
 	dbHandler := new(mocks.IDbHandler)
 	mock := new(mocks.IBaseRepository)
 
@@ -244,9 +244,9 @@ func TestBaseGetAllScanError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-//TestBaseGetAllSuccess get all success
+//Test_BaseRepository_GetAll_Success get all success
 //SUCCESS IF RETURN WITHOUT ERRORS
-func TestBaseGetAllSuccess(t *testing.T) {
+func Test_BaseRepository_GetAll_Success(t *testing.T) {
 	dbHandler := new(mocks.IDbHandler)
 	mock := new(mocks.IBaseRepository)
 

@@ -11,9 +11,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-//TestDeviceRepositoryAddOrUpdateErrorIfKeyEmpty save item with empty key
+//Test_DeviceRepository_AddOrUpdate_ErrorIfKeyEmpty save item with empty key
 //SUCCESS IF RETURN ERRORS
-func TestDeviceRepositoryAddOrUpdateErrorIfKeyEmpty(t *testing.T) {
+func Test_DeviceRepository_AddOrUpdate_ErrorIfKeyEmpty(t *testing.T) {
 	expected := models.Device {
 		IP: "",
 	}
@@ -31,9 +31,9 @@ func TestDeviceRepositoryAddOrUpdateErrorIfKeyEmpty(t *testing.T) {
 	assert.Error(t, err)
 }
 
-//TestDeviceRepositoryAddOrUpdateSuccess save item success
+//Test_DeviceRepository_AddOrUpdate_Success save item success
 //SUCCESS IF RETURN WITHOUT ERRORS
-func TestDeviceRepositoryAddOrUpdateSuccess(t *testing.T) {
+func Test_DeviceRepository_AddOrUpdate_Success(t *testing.T) {
 	expected := models.Device {
 		IP: "192.168.11.4",
 	}
@@ -51,9 +51,9 @@ func TestDeviceRepositoryAddOrUpdateSuccess(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-//TestDeviceRepositoryGetErrorIfKeyEmpty get item with empty key
+//Test_DeviceRepository_Get_ErrorIfKeyEmpty get item with empty key
 //SUCCESS IF RETURN ERRORS
-func TestDeviceRepositoryGetErrorIfKeyEmpty(t *testing.T) {
+func Test_DeviceRepository_Get_ErrorIfKeyEmpty(t *testing.T) {
 	h := TestHelper{}
 
 	expected := models.Device {
@@ -71,9 +71,9 @@ func TestDeviceRepositoryGetErrorIfKeyEmpty(t *testing.T) {
 	assert.Error(t, err)
 }
 
-//TestDeviceRepositoryGetSuccess get item by key
+//Test_DeviceRepository_Get_Success get item by key
 //SUCCESS IF RETURN WITHOUT ERRORS
-func TestDeviceRepositoryGetSuccess(t *testing.T) {
+func Test_DeviceRepository_Get_Success(t *testing.T) {
 	h := TestHelper{}
 
 	expected := models.Device {
@@ -92,9 +92,9 @@ func TestDeviceRepositoryGetSuccess(t *testing.T) {
 	assert.True(t, expected.IP == real.IP)
 }
 
-//TestDeviceRepositoryRemoveErrorIfKeyEmpty remove item by empty key
+//Test_DeviceRepository_Remove_ErrorIfKeyEmpty remove item by empty key
 //SUCCESS IF RETURN ERRORS
-func TestDeviceRepositoryRemoveErrorIfKeyEmpty(t *testing.T) {
+func Test_DeviceRepository_Remove_ErrorIfKeyEmpty(t *testing.T) {
 	h := TestHelper{}
 
 	expected := models.Device {
@@ -112,9 +112,9 @@ func TestDeviceRepositoryRemoveErrorIfKeyEmpty(t *testing.T) {
 	assert.Error(t, err)
 }
 
-//TestDeviceRepositoryRemoveErrorIfKeyFake remove item by fake key
+//Test_DeviceRepository_Remove_ErrorIfKeyFake remove item by fake key
 //SUCCESS IF RETURN ERRORS
-func TestDeviceRepositoryRemoveErrorIfKeyFake(t *testing.T) {
+func Test_DeviceRepository_Remove_ErrorIfKeyFake(t *testing.T) {
 	h := TestHelper{}
 
 	expected := models.Device {
@@ -134,9 +134,9 @@ func TestDeviceRepositoryRemoveErrorIfKeyFake(t *testing.T) {
 	assert.Error(t, err)
 }
 
-//TestDeviceRepositoryRemoveSuccess remove item by key
+//Test_DeviceRepository_Remove_Success remove item by key
 //SUCCESS IF RETURN WITHOUT ERRORS
-func TestDeviceRepositoryRemoveSuccess(t *testing.T) {
+func Test_DeviceRepository_Remove_Success(t *testing.T) {
 	h := TestHelper{}
 
 	expected := models.Device {
@@ -154,9 +154,9 @@ func TestDeviceRepositoryRemoveSuccess(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-//TestDeviceRepositoryGetAllWasEmpty return empty slice
+//Test_DeviceRepository_GetAll_AllWasEmpty return empty slice
 //SUCCESS IF RETURN WITHOUT ERRORS
-func TestDeviceRepositoryGetAllWasEmpty(t *testing.T) {
+func Test_DeviceRepository_GetAll_AllWasEmpty(t *testing.T) {
 	h := TestHelper{}
 
 	expected := make([]interface{}, 0)
@@ -173,9 +173,9 @@ func TestDeviceRepositoryGetAllWasEmpty(t *testing.T) {
 	assert.True(t, len(real) == 0)
 }
 
-//TestDeviceRepositoryGetAllNotEmpty return slice len = 2
+//Test_DeviceRepository_GetAll_AllNotEmpty return slice len = 2
 //SUCCESS IF RETURN WITHOUT ERRORS
-func TestDeviceRepositoryGetAllNotEmpty(t *testing.T) {
+func Test_DeviceRepository_GetAll_AllNotEmpty(t *testing.T) {
 	h := TestHelper{}
 
 	expected := make([]interface{}, 0)

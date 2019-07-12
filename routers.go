@@ -24,7 +24,9 @@ func initRouters(serviceContainer IServiceContainer, log *logwriter.Logger, db *
 	{
 		searchController := serviceContainer.InjectSearchController()
 		videoController := serviceContainer.InjectVideoController()
+
 		deviceController := serviceContainer.InjectDeviceController()
+		deviceAuthController := serviceContainer.InjectDeviceAuthController()
 
 		api := Router.Group("/v1")
 		//	api.Handle("/get-token", auth.GetTokenHandler)
@@ -36,6 +38,10 @@ func initRouters(serviceContainer IServiceContainer, log *logwriter.Logger, db *
 		api.GET("/device/all", deviceController.All)
 		api.GET("/device/add/:ip/:port", deviceController.AddOrUpdate)
 		api.DELETE("/device/remove/:ip", deviceController.Remove)
+
+		api.GET("/device/auth/all", deviceAuthController.All)
+		api.GET("/device/auth/add/:login/:password", deviceAuthController.AddOrUpdate)
+		api.DELETE("/device/auth/remove/:login", deviceAuthController.Remove)
 	}
 
 	return

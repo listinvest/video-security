@@ -20,8 +20,10 @@ import (
 //IServiceContainer container
 type IServiceContainer interface {
 	InjectDeviceRepository() interfaces.IDeviceRepository
+	InjectDeviceAuthRepository() interfaces.IDeviceAuthRepository
 
 	InjectDeviceService() interfaces.IDeviceService
+	InjectDeviceAuthService() interfaces.IDeviceAuthService
 	InjectSearchService() interfaces.ISearchService
 
 	InjectDispatcher() taskdispatcher.ITaskDispatcher
@@ -29,6 +31,7 @@ type IServiceContainer interface {
 	InjectSearchController() controllers.SearchController
 	InjectVideoController() controllers.VideoController
 	InjectDeviceController() controllers.DeviceController	
+	InjectDeviceAuthController() controllers.DeviceAuthController	
 }
 
 //kernel
@@ -66,11 +69,26 @@ func (k *kernel) InjectDeviceRepository() interfaces.IDeviceRepository {
 	}
 }
 
+//Inject DeviceAuthRepository
+func (k *kernel) InjectDeviceAuthRepository() interfaces.IDeviceAuthRepository {
+	return &repositories.DeviceAuthRepository{
+		k.CreateBaseRepository("DeviceAuth_"),
+	}
+}
+
 //Inject DeviceService
 func (k *kernel) InjectDeviceService() interfaces.IDeviceService {
 	return &services.DeviceService{
 		k.Logger,
 		k.InjectDeviceRepository(),
+	}
+}
+
+//Inject DeviceAuthService
+func (k *kernel) InjectDeviceAuthService() interfaces.IDeviceAuthService {
+	return &services.DeviceAuthService{
+		k.Logger,
+		k.InjectDeviceAuthRepository(),
 	}
 }
 
@@ -110,6 +128,13 @@ func (k *kernel) InjectDeviceController() controllers.DeviceController {
 	}
 }
 
+//Inject DeviceAuthController
+func (k *kernel) InjectDeviceAuthController() controllers.DeviceAuthController {
+	return controllers.DeviceAuthController{
+		k.Logger,
+		k.InjectDeviceAuthService(),
+	}
+}
 
 var (
 	k             *kernel

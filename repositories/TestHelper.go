@@ -14,3 +14,10 @@ func (h *TestHelper) CreateDeviceRepository(baserep interfaces.IBaseRepository) 
 		baserep,
 	}
 }
+
+//CreateDeviceAuthRepository create
+func (h *TestHelper) CreateDeviceAuthRepository(baserep interfaces.IBaseRepository) interfaces.IDeviceAuthRepository {
+	return &DeviceAuthRepository{
+		baserep,
+	}
+}
