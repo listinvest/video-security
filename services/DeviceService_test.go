@@ -40,7 +40,8 @@ func Test_DeviceService_AddOrUpdate_AuthNotFound(t *testing.T) {
 	h := TestHelper{}
 	rep := new(mocks.IDeviceRepository)
 	repAuth := new(mocks.IDeviceAuthRepository)
-	s := h.CreateTestDeviceService(rep, repAuth)
+	donvif := new(mocks.IDeviceOnvif)
+	s := h.CreateTestDeviceService(rep, repAuth, donvif)
 
 	ip := "192.168.11.4"
 	port := 37777
