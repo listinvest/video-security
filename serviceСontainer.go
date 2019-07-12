@@ -28,6 +28,7 @@ type IServiceContainer interface {
 
 	InjectSearchController() controllers.SearchController
 	InjectVideoController() controllers.VideoController
+	InjectDeviceController() controllers.DeviceController	
 }
 
 //kernel
@@ -89,7 +90,7 @@ func (k *kernel) InjectSearchController() controllers.SearchController {
 	}
 }
 
-//Inject SearchController
+//Inject VideoController
 func (k *kernel) InjectVideoController() controllers.VideoController {
 	return controllers.VideoController{
 		k.Logger,
@@ -99,6 +100,16 @@ func (k *kernel) InjectVideoController() controllers.VideoController {
 		},
 	}
 }
+
+
+//Inject DeviceController
+func (k *kernel) InjectDeviceController() controllers.DeviceController {
+	return controllers.DeviceController{
+		k.Logger,
+		k.InjectDeviceService(),
+	}
+}
+
 
 var (
 	k             *kernel

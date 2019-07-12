@@ -18,20 +18,24 @@
 
     <div id="app">
       <md-tabs>
+        <md-tab id="tab-devices" md-label="devices">
+           <app-devices/>
+        </md-tab>
+        <md-tab id="tab-video" md-label="video">
+          <surv/>
+        </md-tab>
         <md-tab id="tab-auto-search" md-label="auto search">
           <auto-search/>
         </md-tab>
         <md-tab id="tab-manual-search" md-label="manual search">
           <manual-search/>
         </md-tab>
-        <md-tab id="tab-video" md-label="video">
-          <surv/>
-        </md-tab>
       </md-tabs>
     </div>
 
     <script src="https://unpkg.com/vue"></script>
     <script src="https://unpkg.com/vue-material"></script>
+    <script src="js/app-devices.js"></script>
     <script src="js/surv.js"></script>
     <script src="js/search.js"></script>
     <script src="js/app.js"></script>
