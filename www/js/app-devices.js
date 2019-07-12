@@ -40,8 +40,11 @@ var appDevices = Vue.component('app-devices', {
         }
     },
     template: `
-    <div v-if="items.length > 0" >
-        <md-table>
+    <div>
+        <div>
+            <md-button class="md-raised md-primary" @click="fetchData">Refresh</md-button>
+        </div>
+        <md-table v-if="items.length > 0" >
             <md-table-row>
                 <md-table-head md-numeric>IP</md-table-head>
                 <md-table-head>Port</md-table-head>

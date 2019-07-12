@@ -1,6 +1,7 @@
 package services
 
 import (
+	"videoSecurity/deviceonvif"
 	"videoSecurity/interfaces"
 	"videoSecurity/logwriter"
 )
@@ -10,10 +11,12 @@ type TestHelper struct {
 }
 
 //CreateTestDeviceService create
-func (h *TestHelper) CreateTestDeviceService(rep interfaces.IDeviceRepository) interfaces.IDeviceService {
+func (h *TestHelper) CreateTestDeviceService(rep interfaces.IDeviceRepository, repAuth interfaces.IDeviceAuthRepository, deviceOnvif deviceonvif.IDeviceOnvif) interfaces.IDeviceService {
 	return &DeviceService{
 		&logwriter.Logger{},
 		rep,
+		repAuth,
+		deviceOnvif,
 	}
 }
 

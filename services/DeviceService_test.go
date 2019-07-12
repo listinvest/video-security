@@ -34,20 +34,58 @@ func Test_DeviceService_AddOrUpdate_EmptyPort(t *testing.T) {
 	assert.Error(t, err)
 }
 
-//Test_DeviceService_AddOrUpdate_Success add success
+//Test_DeviceService_AddOrUpdate_AuthNotFound in db not found login/pass for qutorization on devices
 //SUCCESS IF RETURN WITHOUT ERRORS
-func Test_DeviceService_AddOrUpdate_Success(t *testing.T) {
+func Test_DeviceService_AddOrUpdate_AuthNotFound(t *testing.T) {
 	h := TestHelper{}
 	rep := new(mocks.IDeviceRepository)
-	s := h.CreateTestDeviceService(rep)
+	repAuth := new(mocks.IDeviceAuthRepository)
+	s := h.CreateTestDeviceService(rep, repAuth)
 
 	ip := "192.168.11.4"
 	port := 37777
 
 	dev := models.Device{
-		IP:   ip,
-		Port: port,
+		IP:       ip,
+		Port:     port,
+		Channels: make([]models.Channel, 0),
 	}
+
+	auths := make([]models.DeviceAuth, 0)
+	repAuth.On("GetAll").Return(auths, nil)
+	rep.On("AddOrUpdate", dev).Return(dev, nil)
+
+	_, err := s.AddOrUpdate(ip, port)
+
+	assert.Error(t, err)
+}
+
+//Test_DeviceService_AddOrUpdate_Success add success
+//SUCCESS IF RETURN WITHOUT ERRORS
+func Test_DeviceService_AddOrUpdate_Success(t *testing.T) {
+	h := TestHelper{}
+	rep := new(mocks.IDeviceRepository)
+	repAuth := new(mocks.IDeviceAuthRepository)
+	s := h.CreateTestDeviceService(rep, repAuth)
+
+	ip := "192.168.11.4"
+	port := 37777
+
+	auths := make([]models.DeviceAuth, 1)
+	auths[0] = models.DeviceAuth {
+		Login: "admin1234",
+		Password: "admin4321",
+	}
+
+	dev := models.Device{
+		IP:       ip,
+		Port:     port,
+		Login: auths[0].Login,
+		Password: auths[0].Password,
+		Channels: make([]models.Channel, 0),
+	}
+
+	repAuth.On("GetAll").Return(auths, nil)
 	rep.On("AddOrUpdate", dev).Return(dev, nil)
 
 	real, err := s.AddOrUpdate(ip, port)
@@ -69,7 +107,8 @@ func Test_DeviceService_Get_EmptyIP(t *testing.T) {
 func Test_DeviceService_Get_NotFoundByIp(t *testing.T) {
 	h := TestHelper{}
 	rep := new(mocks.IDeviceRepository)
-	s := h.CreateTestDeviceService(rep)
+	repAuth := new(mocks.IDeviceAuthRepository)
+	s := h.CreateTestDeviceService(rep, repAuth)
 
 	ip := "127.0.0.1"
 	rep.On("Get", ip).Return(models.Device{}, errors.New("not found"))
@@ -83,7 +122,8 @@ func Test_DeviceService_Get_NotFoundByIp(t *testing.T) {
 func Test_DeviceService_Get_Success(t *testing.T) {
 	h := TestHelper{}
 	rep := new(mocks.IDeviceRepository)
-	s := h.CreateTestDeviceService(rep)
+	repAuth := new(mocks.IDeviceAuthRepository)
+	s := h.CreateTestDeviceService(rep, repAuth)
 
 	ip := "192.168.11.4"
 	port := 37777
@@ -113,7 +153,8 @@ func Test_DeviceService_Remove_EmptyIp(t *testing.T) {
 func Test_DeviceService_Remove_NotFoundByIp(t *testing.T) {
 	h := TestHelper{}
 	rep := new(mocks.IDeviceRepository)
-	s := h.CreateTestDeviceService(rep)
+	repAuth := new(mocks.IDeviceAuthRepository)
+	s := h.CreateTestDeviceService(rep, repAuth)
 
 	ip := ""
 	rep.On("Get", ip).Return(models.Device{}, errors.New("not found"))
@@ -127,7 +168,8 @@ func Test_DeviceService_Remove_NotFoundByIp(t *testing.T) {
 func Test_DeviceService_Remove_Success(t *testing.T) {
 	h := TestHelper{}
 	rep := new(mocks.IDeviceRepository)
-	s := h.CreateTestDeviceService(rep)
+	repAuth := new(mocks.IDeviceAuthRepository)
+	s := h.CreateTestDeviceService(rep, repAuth)
 
 	ip := "127.0.0.1"
 	rep.On("Remove", ip).Return(nil)
@@ -141,7 +183,8 @@ func Test_DeviceService_Remove_Success(t *testing.T) {
 func Test_DeviceService_GetAll_Empty(t *testing.T) {
 	h := TestHelper{}
 	rep := new(mocks.IDeviceRepository)
-	s := h.CreateTestDeviceService(rep)
+	repAuth := new(mocks.IDeviceAuthRepository)
+	s := h.CreateTestDeviceService(rep, repAuth)
 
 	devices := make([]models.Device, 0)
 	rep.On("GetAll").Return(devices, nil)
@@ -157,7 +200,8 @@ func Test_DeviceService_GetAll_Empty(t *testing.T) {
 func Test_DeviceService_GetAll_Success(t *testing.T) {
 	h := TestHelper{}
 	rep := new(mocks.IDeviceRepository)
-	s := h.CreateTestDeviceService(rep)
+	repAuth := new(mocks.IDeviceAuthRepository)
+	s := h.CreateTestDeviceService(rep, repAuth)
 
 	devices := make([]models.Device, 2)
 	devices[0] = models.Device{

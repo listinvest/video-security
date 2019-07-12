@@ -81,7 +81,6 @@ func  (s *SearchService) getDevices(taskResult tmodels.DeviceTaskResult) []model
 		}
 
 		res[i] = models.Device {
-			Xaddr: dev.Xaddr,
 			IP: ip,
 			Port: port,
 		}

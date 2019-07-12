@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"videoSecurity/controllers"
+	"videoSecurity/deviceonvif"
 	"videoSecurity/infrastructures"
 	"videoSecurity/interfaces"
 	"videoSecurity/logwriter"
@@ -27,11 +28,12 @@ type IServiceContainer interface {
 	InjectSearchService() interfaces.ISearchService
 
 	InjectDispatcher() taskdispatcher.ITaskDispatcher
+	InjectDeviceOnvif() deviceonvif.IDeviceOnvif
 
 	InjectSearchController() controllers.SearchController
 	InjectVideoController() controllers.VideoController
-	InjectDeviceController() controllers.DeviceController	
-	InjectDeviceAuthController() controllers.DeviceAuthController	
+	InjectDeviceController() controllers.DeviceController
+	InjectDeviceAuthController() controllers.DeviceAuthController
 }
 
 //kernel
@@ -40,9 +42,14 @@ type kernel struct {
 	Logger *logwriter.Logger
 }
 
-//Inject InjectSearchService
+//Inject InjectDispatcher
 func (k *kernel) InjectDispatcher() taskdispatcher.ITaskDispatcher {
 	return &taskdispatcher.TaskDispatcher{}
+}
+
+//Inject InjectDeviceOnvif
+func (k *kernel) InjectDeviceOnvif() deviceonvif.IDeviceOnvif {
+	return &deviceonvif.DeviceOnvif{}
 }
 
 //Inject CreateDbHandler
@@ -81,6 +88,8 @@ func (k *kernel) InjectDeviceService() interfaces.IDeviceService {
 	return &services.DeviceService{
 		k.Logger,
 		k.InjectDeviceRepository(),
+		k.InjectDeviceAuthRepository(),
+		k.InjectDeviceOnvif(),
 	}
 }
 
@@ -118,7 +127,6 @@ func (k *kernel) InjectVideoController() controllers.VideoController {
 		},
 	}
 }
-
 
 //Inject DeviceController
 func (k *kernel) InjectDeviceController() controllers.DeviceController {

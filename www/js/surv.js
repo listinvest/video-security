@@ -81,10 +81,30 @@ var survcell = Vue.component('surv-cell', {
     data: function () {
         return {
             srcVideo: '',
-            srcInput: 'rtsp://admin:admin@192.168.11.178:554/cam/realmonitor?channel=1&subtype=1&unicast=true&proto=Onvif',
+            srcRtps: [],
+            srcInput: '',
         }
     },
+    created () {
+        this.fetchData()
+    },
     methods: {
+        fetchData () {
+            var self = this;
+            self.items = []
+            this.$http.get(URL_App_Devices_All)
+            .then(function(response) {
+                if(!response.data.IsError) {
+                    var devices = JSON.parse(response.data.Data)
+                    for(var i = 0; i < devices.length; i++) { 
+                        for(var j = 0; j < devices[i].channels.length; j++) {
+                            self.srcRtps.push(devices[i].channels[j].rtsp)
+                        }
+                    } 
+                }
+            })
+            .catch(error => console.log(error));
+        },
         start: function() {
           
             // ? -> +
@@ -107,10 +127,12 @@ var survcell = Vue.component('surv-cell', {
             <md-card-actions>
                 <table class="table-cell-input">
                 <tr>
-                    <td>
-                        <md-field md-inline>
-                            <label>RTSP url</label>
-                            <md-input v-model="srcInput"></md-input>
+                    <td @click="fetchData">
+                        <md-field>
+                            <label for="select_rtsp_id">RTSP</label>
+                            <md-select v-model="srcInput" name="select_rtsp_id" id="select_rtsp_id">
+                                <md-option v-for="item in srcRtps" :value="item">{{ item }}</md-option>
+                            </md-select>
                         </md-field>
                     </td>
                     <td>

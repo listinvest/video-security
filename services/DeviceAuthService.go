@@ -30,6 +30,8 @@ func (service *DeviceAuthService) AddOrUpdate(login string, password string) (mo
 		Password: password,
 	}
 
+
+
 	return service.Repository.AddOrUpdate(devAuth)
 }
 
