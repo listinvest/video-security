@@ -1,7 +1,7 @@
 package mocks
 
 import (
-	"videoSecurity/models"
+	"github.com/prohevg/video-security/models"
 	"github.com/stretchr/testify/mock"
 )
 

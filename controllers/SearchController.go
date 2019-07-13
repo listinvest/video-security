@@ -3,8 +3,8 @@ package controllers
 import (
 	"net/http"
 	
-	"videoSecurity/interfaces"
-	"videoSecurity/logwriter"
+	"github.com/prohevg/video-security/interfaces"
+	"github.com/prohevg/video-security/logwriter"
 
 	"github.com/gin-gonic/gin"
 )

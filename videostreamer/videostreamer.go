@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"sync"
 
-	"videoSecurity/videostreamer/rtspstream"
+	"github.com/prohevg/video-security/videostreamer/rtspstream"
 )
 
 //IVideoStreamer streamer

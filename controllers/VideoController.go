@@ -4,8 +4,8 @@ import (
 	"strings"
 	"net/http"
 
-	"videoSecurity/videostreamer"
-	"videoSecurity/logwriter"
+	"github.com/prohevg/video-security/videostreamer"
+	"github.com/prohevg/video-security/logwriter"
 
 	"github.com/gin-gonic/gin"	
 )

@@ -1,7 +1,7 @@
 package models
 
 import (
-	"videoSecurity/tasks/base"
+	"github.com/prohevg/video-security/tasks/base"
 )
 
 //DeviceTaskResult search results

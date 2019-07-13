@@ -20,6 +20,7 @@ type WinPipe struct {
 	//name of pipe (address)
 	Address string
 
+	//true - ready accept
 	isReady bool
 }
 
@@ -44,7 +45,7 @@ func (pipe *WinPipe) Accept() error {
 	}
 
 	pipe.Conn = conn
-	pipe.isReady =true
+	pipe.isReady = true
 
 	return nil
 }

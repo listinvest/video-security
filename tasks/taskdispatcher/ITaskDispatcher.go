@@ -1,7 +1,7 @@
 package taskdispatcher
 
 import (
-	"videoSecurity/tasks/base"
+	"github.com/prohevg/video-security/tasks/base"
 )
 
 //ITaskDispatcher interface

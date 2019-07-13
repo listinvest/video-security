@@ -2,11 +2,11 @@ package repositories
 
 import (
 	"errors"
-	"videoSecurity/interfaces"
-	"videoSecurity/models"
+	"github.com/prohevg/video-security/interfaces"
+	"github.com/prohevg/video-security/models"
 	"testing"
 
-	"videoSecurity/interfaces/mocks"
+	"github.com/prohevg/video-security/interfaces/mocks"
 
 	"github.com/stretchr/testify/assert"
 )

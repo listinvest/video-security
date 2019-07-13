@@ -2,7 +2,7 @@ package mocks
 
 import (
 	"errors"
-	"videoSecurity/interfaces"
+	"github.com/prohevg/video-security/interfaces"
 	"github.com/stretchr/testify/mock"
 )
 

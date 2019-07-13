@@ -1,6 +1,6 @@
-set -ex
+#set -ex
 
-#export LD_LIBRARY_PATH=$HOME/compiled/lib/
+export LD_LIBRARY_PATH=$HOME/compiled/lib/
 export PATH="$HOME/compiled/bin":$PATH
 export PKG_CONFIG_PATH=$HOME/compiled/lib/pkgconfig
 
@@ -17,15 +17,15 @@ fi
 if [ ! -e "$HOME/x264" ]; then
   git clone http://git.videolan.org/git/x264.git "$HOME/x264"
   cd "$HOME/x264"
-   # git master as of this writing
-  #git checkout 7d0ff22e8c96de126be9d3de4952edd6d1b75a8c
-  ./configure --prefix="$HOME/compiled" --enable-pic --enable-static
+   #git master as of this writing
+   #git checkout 7d0ff22e8c96de126be9d3de4952edd6d1b75a8c
+  ./configure --prefix="$HOME/compiled" --enable-pic --enable-static 
   make
   make install-lib-static
 fi
 
-if [  -e "$HOME/ffmpeg/libavcodec/libavcodec.a" ]; then
-  #git clone https://git.ffmpeg.org/ffmpeg.git "$HOME/ffmpeg" || echo "FFmpeg dir already exists"
+if [ ! -e "$HOME/ffmpeg/libavcodec/libavcodec.a" ]; then
+  git clone https://git.ffmpeg.org/ffmpeg.git "$HOME/ffmpeg" || echo "FFmpeg dir already exists"
   cd "$HOME/ffmpeg"
   ./configure --prefix="$HOME/compiled" --enable-libx264 --enable-gnutls --enable-gpl --enable-static --enable-shared
   make

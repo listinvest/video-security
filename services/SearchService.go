@@ -4,13 +4,13 @@ import (
 	"errors"
 	"strconv"
 	"net/url"
-	"videoSecurity/logwriter"
-	"videoSecurity/models"
-	"videoSecurity/tasks/base"
-	tmodels "videoSecurity/tasks/models"
-	"videoSecurity/tasks/autosearch"
-	"videoSecurity/tasks/manualsearch"
-	"videoSecurity/tasks/taskdispatcher"
+	"github.com/prohevg/video-security/logwriter"
+	"github.com/prohevg/video-security/models"
+	"github.com/prohevg/video-security/tasks/base"
+	tmodels "github.com/prohevg/video-security/tasks/models"
+	"github.com/prohevg/video-security/tasks/autosearch"
+	"github.com/prohevg/video-security/tasks/manualsearch"
+	"github.com/prohevg/video-security/tasks/taskdispatcher"
 )
 
 //SearchService search device in network

@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	"videoSecurity/models"
+	"github.com/prohevg/video-security/models"
 )
 
 //IDeviceAuthRepository password for auth on device

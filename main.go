@@ -6,7 +6,7 @@ import (
 	"path"
 	"time"
 
-	"videoSecurity/logwriter"
+	"github.com/prohevg/video-security/logwriter"
 
 	"github.com/syndtr/goleveldb/leveldb"
 )

@@ -1,8 +1,8 @@
 package repositories
 
 import (
-	"videoSecurity/interfaces"
-	"videoSecurity/models"
+	"github.com/prohevg/video-security/interfaces"
+	"github.com/prohevg/video-security/models"
 )
 
 //DeviceAuthRepository repository for devices

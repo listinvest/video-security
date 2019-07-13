@@ -3,8 +3,8 @@ package infrastructures
 import (
 	"errors"
 
-	"videoSecurity/interfaces"
-	"videoSecurity/logwriter"
+	"github.com/prohevg/video-security/interfaces"
+	"github.com/prohevg/video-security/logwriter"
 
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/util"

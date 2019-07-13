@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"strings"
 
-	"videoSecurity/models"
+	"github.com/prohevg/video-security/models"
 
 	"github.com/gin-gonic/gin"
 )

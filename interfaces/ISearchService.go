@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	"videoSecurity/models"
+	"github.com/prohevg/video-security/models"
 )
 
 //ISearchService search device in network

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"testing"
 
-	"videoSecurity/interfaces/mocks"
-	"videoSecurity/models"
+	"github.com/prohevg/video-security/interfaces/mocks"
+	"github.com/prohevg/video-security/models"
 
 	"github.com/stretchr/testify/assert"
 )

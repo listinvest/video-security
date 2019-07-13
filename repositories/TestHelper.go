@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"videoSecurity/interfaces"
+	"github.com/prohevg/video-security/interfaces"
 )
 
 //TestHelper creator test models

@@ -1,9 +1,9 @@
 package services
 
 import (
-	"videoSecurity/deviceonvif"
-	"videoSecurity/interfaces"
-	"videoSecurity/logwriter"
+	"github.com/prohevg/video-security/deviceonvif"
+	"github.com/prohevg/video-security/interfaces"
+	"github.com/prohevg/video-security/logwriter"
 )
 
 //TestHelper creator test models

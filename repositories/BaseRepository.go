@@ -6,8 +6,8 @@ import (
 	"strings"
 	"errors"
 	"fmt"
-	"videoSecurity/interfaces"
-	"videoSecurity/logwriter"
+	"github.com/prohevg/video-security/interfaces"
+	"github.com/prohevg/video-security/logwriter"
 )
 
 //BaseRepository repository for FolderReceive model

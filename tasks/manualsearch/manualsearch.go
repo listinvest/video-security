@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"time"
 
-	"videoSecurity/tasks/base"
-	"videoSecurity/tasks/models"
-	"videoSecurity/tasks/manualsearch/ipparse"
-	"videoSecurity/tasks/manualsearch/portparse"
+	"github.com/prohevg/video-security/tasks/base"
+	"github.com/prohevg/video-security/tasks/models"
+	"github.com/prohevg/video-security/tasks/manualsearch/ipparse"
+	"github.com/prohevg/video-security/tasks/manualsearch/portparse"
 )
 
 const (

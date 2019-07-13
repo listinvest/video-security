@@ -1,8 +1,8 @@
 package autosearch
 
 import (
-	"videoSecurity/tasks/base"
-	"videoSecurity/tasks/models"
+	"github.com/prohevg/video-security/tasks/base"
+	"github.com/prohevg/video-security/tasks/models"
 
 	"github.com/yakovlevdmv/goonvif"
 )

@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	"videoSecurity/models"
+	"github.com/prohevg/video-security/models"
 )
 
 //IDeviceRepository devices in db

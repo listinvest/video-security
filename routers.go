@@ -1,7 +1,7 @@
 package main
 
 import (
-	"videoSecurity/logwriter"
+	"github.com/prohevg/video-security/logwriter"
 
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"

@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"regexp"
 
-	"videoSecurity/interfaces"
-	"videoSecurity/logwriter"
-	"videoSecurity/models"
-	"videoSecurity/deviceonvif"
+	"github.com/prohevg/video-security/interfaces"
+	"github.com/prohevg/video-security/logwriter"
+	"github.com/prohevg/video-security/models"
+	"github.com/prohevg/video-security/deviceonvif"
 )
 
 //DeviceService devices in application

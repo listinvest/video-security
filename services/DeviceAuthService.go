@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 
-	"videoSecurity/interfaces"
-	"videoSecurity/logwriter"
-	"videoSecurity/models"
+	"github.com/prohevg/video-security/interfaces"
+	"github.com/prohevg/video-security/logwriter"
+	"github.com/prohevg/video-security/models"
 )
 
 //DeviceAuthService devices in application
